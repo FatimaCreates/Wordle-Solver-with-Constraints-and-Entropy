@@ -1,9 +1,12 @@
-"""Step 3 check: run random and frequency baselines on every answer."""
+"""Run all four strategies on every answer (one pass each, seed 42)."""
 import time
 from statistics import mean
 
 from src.agent import SolverAgent
 from src.game import WordleGame
+from src.entropy import EntropyStrategy
+from src.minimax import MinimaxStrategy
+from src.patterns import PatternMatrix
 from src.strategies import RandomStrategy, FrequencyStrategy
 from src.wordlist import load_answers, load_guesses
 
@@ -30,10 +33,10 @@ def summarise(name, results, seconds):
 if __name__ == "__main__":
     answers, pool = load_answers(), load_guesses()
 
-    t = time.time()
-    res = run_all(FrequencyStrategy(answers), answers, pool)
-    summarise("frequency", res, time.time() - t)
-
-    t = time.time()
-    res = run_all(RandomStrategy(SEED), answers, pool)
-    summarise("random", res, time.time() - t)
+    pm = PatternMatrix.load_or_build(pool, answers)
+    strategies = [RandomStrategy(SEED), FrequencyStrategy(answers),
+                  EntropyStrategy(pm), MinimaxStrategy(pm)]
+    for strategy in strategies:
+        t = time.time()
+        res = run_all(strategy, answers, pool)
+        summarise(strategy.name, res, time.time() - t)
