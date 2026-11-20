@@ -1,5 +1,5 @@
 numpy
 pandas
 matplotlib
-streamlit
+streamlit>=1.46
 pytest
