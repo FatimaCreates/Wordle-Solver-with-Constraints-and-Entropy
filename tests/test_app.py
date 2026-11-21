@@ -125,3 +125,52 @@ def test_race_player_runs_out_of_guesses_ai_finishes():
             break
     assert at.session_state["session"].is_over()
     assert not at.exception
+
+
+# ---------- fun extras ----------
+def test_win_shows_praise_confetti_once_and_share_grid():
+    at = force_secret(start_game())
+    at = guess(at, "crane")
+    assert 'class="confetti"' not in page_text(at)
+    at = guess(at, "wound")
+    text = page_text(at)
+    assert "Magnificent" in text and "Solved in 2 guesses" in text
+    assert 'class="confetti"' in text                                   # confetti on the winning run
+    assert any("Wordle Solver 2/6" in c.value for c in at.code)
+    assert "🟩🟩🟩🟩🟩" in at.code[0].value
+    at = at.run()                                               # any later rerun: no new confetti
+    assert 'class="confetti"' not in page_text(at)
+
+
+def test_stats_count_each_game_once():
+    at = force_secret(start_game())
+    at = guess(at, "wound")                                     # win in 1
+    at = at.run()
+    s = at.session_state["stats"]
+    assert s["played"] == 1 and s["wins"] == 1 and s["streak"] == 1 and s["dist"][1] == 1
+    at = force_secret(click(at, "new_btn"))
+    for _ in range(6):
+        at = guess(at, "slate")
+    s = at.session_state["stats"]
+    assert s["played"] == 2 and s["wins"] == 1 and s["streak"] == 0 and s["dist"]["fail"] == 1
+    assert "Played" in page_text(at)
+
+
+def test_wrong_word_shakes_the_row():
+    at = force_secret(start_game())
+    at = guess(at, "zzzzz")
+    assert "row shake" in page_text(at)
+    at = click(at, "k_back")
+    assert "row shake" not in page_text(at)
+
+
+def test_ai_note_in_race_mode_hides_letters():
+    at = start_game()
+    at.radio[0].set_value("Race vs AI")
+    at = force_secret(at.run(), secret="wound")
+    assert "words left" not in page_text(at)                    # AI has not moved yet
+    at = guess(at, "crane")
+    text = page_text(at)
+    assert "words left" in text and "→" in text
+    ai_word = at.session_state["session"].ai_history[0][0]
+    assert f">{ai_word[0]}</div>" not in text                  # AI tiles stay blank while the race runs

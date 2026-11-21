@@ -86,6 +86,16 @@ class RaceSession:
         return list(self._ai_game.history)
 
     @property
+    def player_sizes(self) -> List[int]:
+        """Candidates left before any guess and after each of the player's guesses."""
+        return list(self._player_belief.sizes)
+
+    @property
+    def ai_sizes(self) -> List[int]:
+        """Candidates left before any guess and after each of the AI's guesses."""
+        return list(self._ai_belief.sizes)
+
+    @property
     def player_remaining(self) -> int:
         """How many answers are still possible given the player's clues."""
         return self._player_belief.remaining

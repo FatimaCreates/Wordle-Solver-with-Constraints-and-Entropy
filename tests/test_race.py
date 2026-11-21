@@ -77,3 +77,12 @@ def test_remaining_counts_shrink():
     assert s.player_remaining == 2315
     s.player_guess("crane")
     assert s.player_remaining < 2315
+
+
+def test_size_history_properties():
+    s = make(secret="wound")
+    assert s.player_sizes == [2315] and s.ai_sizes == [2315]
+    s.player_guess("crane")
+    s.ai_step()
+    assert len(s.player_sizes) == 2 and len(s.ai_sizes) == 2
+    assert s.player_sizes[-1] == s.player_remaining and s.ai_sizes[-1] == s.ai_remaining
