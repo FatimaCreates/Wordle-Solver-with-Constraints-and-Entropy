@@ -28,10 +28,11 @@ CSS = """
 header[data-testid="stHeader"], #MainMenu, footer { display: none !important; }
 .block-container, [data-testid="stMainBlockContainer"] {
   max-width: 640px !important; margin: 0.8rem auto 0 auto !important;
-  padding: 0.9rem 1.4rem 1rem 1.4rem !important;
+  padding: 1rem 1.4rem 1.4rem 1.4rem !important;
   background: rgba(255, 251, 230, 0.93); border: 4px solid #fff; border-radius: 26px;
   box-shadow: 0 8px 30px rgba(90, 70, 160, 0.25); }
-[data-testid="stVerticalBlock"] { gap: 0.5rem; }
+[data-testid="stVerticalBlock"] { gap: 0.3rem; }
+.pad { padding-bottom: 1.1rem; }
 
 /* ---------- text ---------- */
 .title { text-align:center; font-weight:800; color:#3B3560; letter-spacing:.06em; font-size:2rem; margin:0; }
@@ -42,7 +43,7 @@ header[data-testid="stHeader"], #MainMenu, footer { display: none !important; }
 .how { background:#EFEBFA; border-radius:18px; padding:.8rem 1rem; margin:.8rem auto 1.1rem auto; max-width:420px; }
 .how h4 { margin:0 0 .5rem 0; color:#3B3560; text-align:center; }
 .how-row { display:flex; align-items:center; gap:.7rem; margin:.35rem 0; color:#3B3560; }
-.foot { text-align:center; color:#8a84ad; font-size:.8rem; margin-top:.8rem; }
+.tip { text-align:center; color:#6c6591; font-size:.85rem; margin-top:.5rem; }
 
 /* ---------- board ---------- */
 .board { margin:.1rem auto .2rem auto; }
@@ -51,6 +52,7 @@ header[data-testid="stHeader"], #MainMenu, footer { display: none !important; }
         font-size:1.6rem; font-weight:800; color:#fff; text-transform:uppercase;
         border:2px solid #B1A9DA; border-radius:7px; background:rgba(255,255,255,.55); box-sizing:border-box; }
 .small .tile { width:38px; height:38px; font-size:1.2rem; border-radius:6px; }
+.tile.typed { background:#fff; border-color:#3B3560; color:#3B3560; }
 .tile.mini { width:34px; height:34px; font-size:1.1rem; flex:none; }
 .tile.g { background:#6AAA64; border-color:#6AAA64; }
 .tile.y { background:#E5B22A; border-color:#E5B22A; }
@@ -68,14 +70,17 @@ header[data-testid="stHeader"], #MainMenu, footer { display: none !important; }
 .status.info { background:#FFEDA8; }
 .status.warn { background:#FFE3C2; }
 
-/* ---------- keyboard ---------- */
-.kb { margin:.1rem auto 0 auto; }
-.krow { display:flex; gap:4px; justify-content:center; margin-bottom:4px; }
-.key { min-width:31px; height:40px; display:flex; align-items:center; justify-content:center;
-       border-radius:7px; background:#B1A9DA; color:#3B3560; font-weight:700; font-size:.9rem; }
-.key.g { background:#6AAA64; color:#fff; }
-.key.y { background:#E5B22A; color:#fff; }
-.key.r { background:#E4575B; color:#fff; }
+/* ---------- keyboard (real buttons, so the keys can be clicked) ---------- */
+.st-key-kb [data-testid="stHorizontalBlock"] { flex-wrap:nowrap !important; gap:.25rem !important; }
+.st-key-kb [data-testid="stColumn"] { min-width:0 !important; }
+.st-key-kb [data-testid="stVerticalBlock"] { gap:.3rem; }
+.st-key-kb .stButton button { height:42px; min-height:42px; padding:0; width:100%; border-radius:8px;
+                    background:#B1A9DA; color:#3B3560; border:none; box-shadow:0 3px 0 #8f86c4; }
+.st-key-kb .stButton button p { font-size:.95rem; font-weight:800; margin:0; }
+.st-key-k_enter button p { font-size:.62rem; }
+.st-key-kb .stButton button:hover { transform:translateY(-1px); color:#3B3560; border:none; }
+.st-key-kb .stButton button:active { transform:translateY(2px); box-shadow:0 1px 0 #8f86c4; }
+.st-key-kb .stButton button:disabled { opacity:.55; }
 
 /* ---------- cute buttons ---------- */
 .stButton button, .stFormSubmitButton button {
@@ -88,10 +93,9 @@ header[data-testid="stHeader"], #MainMenu, footer { display: none !important; }
 .st-key-start_btn button {
   background:linear-gradient(135deg, #FFEDA8, #FFD86B); font-size:1.3rem; padding:.7rem 1rem;
   border:3px solid #fff; box-shadow:0 6px 0 #B1A9DA, 0 12px 20px rgba(80,60,150,.28); }
+.st-key-start_btn { padding-bottom:.5rem; }
 .st-key-start_btn button:hover { transform:translateY(-4px) scale(1.04); }
 .st-key-start_btn button:active { transform:translateY(4px); box-shadow:0 2px 0 #B1A9DA; }
-.stForm { border:none !important; padding:0 !important; }
-.stForm [data-testid="stHorizontalBlock"] { flex-wrap:nowrap; gap:.4rem; }
 [data-testid="stRadio"] label p, [data-testid="stRadio"] label div { font-weight:700; color:#3B3560; }
 </style>
 """
@@ -112,8 +116,8 @@ def background_uri() -> str:
 
 
 # ---------- HTML helpers ----------
-def board_html(history, show_letters=True, animate_last=False, small=False, rows=MAX_GUESSES):
-    out = [f'<div class="board{" small" if small else ""}">']
+def board_html(history, current="", show_letters=True, animate_last=False, small=False, rows=MAX_GUESSES):
+    out = [f'<div class="pad"><div class="board{" small" if small else ""}">']
     for r in range(rows):
         out.append('<div class="row">')
         if r < len(history):
@@ -123,32 +127,39 @@ def board_html(history, show_letters=True, animate_last=False, small=False, rows
                 style = f' style="animation-delay:{i * 0.12:.2f}s"' if pop else ""
                 letter = ch if show_letters else ""
                 out.append(f'<div class="tile {CLASS[p]}{" pop" if pop else ""}"{style}>{letter}</div>')
+        elif r == len(history) and current:                      # the row being typed
+            for i in range(5):
+                ch = current[i] if i < len(current) else ""
+                out.append(f'<div class="tile{" typed" if ch else ""}">{ch}</div>')
         else:
             out.append('<div class="tile"></div>' * 5)
         out.append("</div>")
-    out.append("</div>")
+    out.append("</div></div>")
     return "".join(out)
 
 
-def keyboard_html(history):
-    status = {}                                   # letter -> best pattern value seen (green > yellow > red)
+KEY_COLORS = {0: ("#E4575B", "#b83b3f"), 1: ("#E5B22A", "#b8891a"), 2: ("#6AAA64", "#4d8548")}
+
+
+def key_status_css(history):
+    """CSS that colours each on-screen key by the best clue seen for its letter (green > yellow > red)."""
+    status = {}
     for word, pattern in history:
         for ch, p in zip(word, pattern):
             status[ch] = max(status[ch], p) if ch in status else p
-    out = ['<div class="kb">']
-    for row in ("qwertyuiop", "asdfghjkl", "zxcvbnm"):
-        out.append('<div class="krow">')
-        for ch in row:
-            cls = f" {CLASS[status[ch]]}" if ch in status else ""
-            out.append(f'<div class="key{cls}">{ch.upper()}</div>')
-        out.append("</div>")
-    out.append("</div>")
-    return "".join(out)
+    rules = []
+    for ch, p in status.items():
+        bg, shadow = KEY_COLORS[p]
+        rules.append(f".st-key-k_{ch} button {{ background:{bg} !important; color:#fff !important; "
+                     f"box-shadow:0 3px 0 {shadow} !important; }}"
+                     f".st-key-k_{ch} button p {{ color:#fff !important; }}")
+    return "<style>" + "".join(rules) + "</style>"
 
 
-def status_html(kind, text, tip=""):
+def status_html(kind, text, tip="", extra_css=""):
     tip_attr = f' title="{tip}"' if tip else ""
-    return f'<div class="status {kind}"{tip_attr}>{text}</div>'
+    body = f'<div class="status {kind}"{tip_attr}>{text}</div>' if text else '<div class="status"></div>'
+    return f'{extra_css}<div class="pad">{body}</div>'
 
 
 # ---------- state and callbacks ----------
@@ -172,9 +183,7 @@ def new_game():
     strategy = ss.strategy if ss.mode == RACE else "entropy"
     ss.session = RaceSession(answers, pool, strategy_name=strategy,
                              seed=random.randrange(10 ** 9), pm=pm)
-    ss.hint, ss.msg, ss.hints_used = None, None, 0
-    if "guess_text" in ss:
-        ss.guess_text = ""
+    ss.hint, ss.msg, ss.hints_used, ss.current = None, None, 0, ""
 
 
 def start():
@@ -196,28 +205,39 @@ def set_strategy():
     new_game()
 
 
-def submit_guess():
+def press_key(ch):
+    ss.msg = None
+    if not is_over() and len(ss.current) < 5:
+        ss.current += ch
+
+
+def press_back():
+    ss.msg = None
+    ss.current = ss.current[:-1]
+
+
+def press_enter():
     session, race = ss.session, ss.mode == RACE
-    word = ss.guess_text.strip().lower()
-    ss.guess_text = ""
     ss.msg = None
     if is_over():
         return
-    if len(word) != 5 or not word.isalpha():
-        ss.msg = ("warn", "Please enter a 5-letter word (letters only).")
+    word = ss.current
+    if len(word) < 5:
+        ss.msg = ("warn", "Not enough letters.")
         return
     try:
         session.player_guess(word)
-        ss.hint = None
-        if race:
-            if not session.is_over():
-                session.ai_step()
-            while player_done(session) and not session.is_over():      # player is out of guesses
-                session.ai_step()
     except ValueError:
-        ss.msg = ("warn", f"'{word.upper()}' is not in the word list.")
+        ss.msg = ("warn", f"'{word.upper()}' is not in the word list.")   # keep the letters so they can be fixed
+        return
     except RuntimeError:
-        pass
+        return
+    ss.current, ss.hint = "", None
+    if race:
+        if not session.is_over():
+            session.ai_step()
+        while player_done(session) and not session.is_over():          # player is out of guesses
+            session.ai_step()
 
 
 def give_hint():
@@ -229,7 +249,7 @@ def give_hint():
 
 if "page" not in ss:
     ss.page, ss.mode, ss.strategy = "start", PLAY, "entropy"
-    ss.session, ss.hint, ss.msg, ss.hints_used = None, None, None, 0
+    ss.session, ss.hint, ss.msg, ss.hints_used, ss.current = None, None, None, 0, ""
 
 st.markdown(CSS.replace("__BG__", background_uri()), unsafe_allow_html=True)
 
@@ -244,13 +264,31 @@ def start_page():
         '<div class="how-row"><div class="tile mini g">C</div><div>Right letter, right spot</div></div>'
         '<div class="how-row"><div class="tile mini y">R</div><div>Right letter, wrong spot</div></div>'
         '<div class="how-row"><div class="tile mini r">E</div><div>Letter is not in the word</div></div>'
-        '</div>',
+        '</div><div class="pad"><div class="tip">Tap the keys under the board, then press ENTER.</div></div>',
         unsafe_allow_html=True)
     middle = st.columns([1, 3, 1])[1]
     with middle:
         with st.container(key="start_btn"):
             st.button("⭐ Start Playing ⭐", on_click=start, use_container_width=True)
-    st.markdown('<div class="foot">AL-2002 Artificial Intelligence Lab · Fall 2026</div>', unsafe_allow_html=True)
+
+
+# ---------- on-screen keyboard ----------
+def keyboard(over):
+    with st.container(key="kb"):
+        row1 = st.columns(10)
+        for col, ch in zip(row1, "qwertyuiop"):
+            col.button(ch.upper(), key=f"k_{ch}", on_click=press_key, args=(ch,), disabled=over,
+                       use_container_width=True)
+        row2 = st.columns([0.5] + [1] * 9 + [0.5])
+        for col, ch in zip(row2[1:10], "asdfghjkl"):
+            col.button(ch.upper(), key=f"k_{ch}", on_click=press_key, args=(ch,), disabled=over,
+                       use_container_width=True)
+        row3 = st.columns([1.6] + [1] * 7 + [1.6])
+        row3[0].button("ENTER", key="k_enter", on_click=press_enter, disabled=over, use_container_width=True)
+        for col, ch in zip(row3[1:8], "zxcvbnm"):
+            col.button(ch.upper(), key=f"k_{ch}", on_click=press_key, args=(ch,), disabled=over,
+                       use_container_width=True)
+        row3[8].button("⌫", key="k_back", on_click=press_back, disabled=over, use_container_width=True)
 
 
 # ---------- game page ----------
@@ -269,50 +307,42 @@ def game_page():
     if race:
         left, right = st.columns(2)
         with left:
-            st.markdown(f'<div class="label">You · {session.player_remaining} words left</div>'
-                        + board_html(player_hist, animate_last=True, small=True), unsafe_allow_html=True)
+            st.markdown('<div class="label">You</div>'
+                        + board_html(player_hist, current=ss.current, animate_last=True, small=True),
+                        unsafe_allow_html=True)
         with right:
-            st.markdown(f'<div class="label">AI ({session.strategy_name}) · {session.ai_remaining} left</div>'
-                        + board_html(ai_hist, show_letters=session.is_over(), small=True), unsafe_allow_html=True)
+            st.markdown(f'<div class="label">AI ({session.strategy_name})</div>'
+                        + board_html(ai_hist, show_letters=session.is_over(), small=True),
+                        unsafe_allow_html=True)
     else:
-        st.markdown(board_html(player_hist, animate_last=True), unsafe_allow_html=True)
+        st.markdown(board_html(player_hist, current=ss.current, animate_last=True), unsafe_allow_html=True)
 
-    # one status line: result > warning > hint > counter
+    # one status line: result > warning > hint (empty otherwise). The key colours ride along in the same block.
+    keys_css = key_status_css(player_hist)
     if over:
         secret = session.secret.upper()
         if race:
-            text = {"player": ("ok", f"🎉 You win the race! The word was {secret}."),
-                    "ai": ("err", f"🤖 The AI wins this one. The word was {secret}."),
-                    "draw": ("info", f"🤝 Draw, nobody solved it. The word was {secret}.")}[session.winner]
+            kind, text = {"player": ("ok", f"🎉 You win the race! The word was {secret}."),
+                          "ai": ("err", f"🤖 The AI wins this one. The word was {secret}."),
+                          "draw": ("info", f"🤝 Draw, nobody solved it. The word was {secret}.")}[session.winner]
         elif player_hist and player_hist[-1][1] == ALL_GREEN:
-            text = ("ok", f"🎉 Solved in {len(player_hist)} guess{'es' if len(player_hist) > 1 else ''}!")
+            kind, text = "ok", f"🎉 Solved in {len(player_hist)} guess{'es' if len(player_hist) > 1 else ''}!"
         else:
-            text = ("err", f"Out of guesses. The word was {secret}.")
-        st.markdown(status_html(*text), unsafe_allow_html=True)
+            kind, text = "err", f"Out of guesses. The word was {secret}."
+        st.markdown(status_html(kind, text, extra_css=keys_css), unsafe_allow_html=True)
     elif ss.msg:
-        st.markdown(status_html(*ss.msg), unsafe_allow_html=True)
+        st.markdown(status_html(ss.msg[0], ss.msg[1], extra_css=keys_css), unsafe_allow_html=True)
     elif ss.hint:
-        st.markdown(status_html("info", f"💡 The AI would guess {ss.hint.upper()} here", HINT_TIP),
+        st.markdown(status_html("info", f"💡 The AI would guess {ss.hint.upper()} here", HINT_TIP, keys_css),
                     unsafe_allow_html=True)
-    elif race:
-        st.markdown(status_html("plain", "Type a word. The AI answers after you."), unsafe_allow_html=True)
     else:
-        st.markdown(status_html("plain", f"Words still possible given your clues: {session.player_remaining}"),
-                    unsafe_allow_html=True)
+        st.markdown(status_html("", "", extra_css=keys_css), unsafe_allow_html=True)
 
-    st.markdown(keyboard_html(player_hist), unsafe_allow_html=True)
+    keyboard(over)
 
-    with st.form("guess_form", clear_on_submit=False, border=False):
-        c_in, c_guess, c_hint, c_new = st.columns([3.2, 1.5, 1.5, 1.4], vertical_alignment="center")
-        c_in.text_input("Your guess", max_chars=5, placeholder="Type a word", key="guess_text",
-                        label_visibility="collapsed", disabled=over)
-        with c_guess:
-            st.form_submit_button("Guess", on_click=submit_guess, type="primary", disabled=over,
-                                  use_container_width=True)
-        with c_hint:
-            st.form_submit_button("💡 Hint", on_click=give_hint, disabled=over, use_container_width=True)
-        with c_new:
-            st.form_submit_button("🔄 New", on_click=new_game, use_container_width=True)
+    _, c_hint, c_new, _ = st.columns([1, 1.6, 1.6, 1])
+    c_hint.button("💡 Hint", key="hint_btn", on_click=give_hint, disabled=over, use_container_width=True)
+    c_new.button("🔄 New", key="new_btn", on_click=new_game, use_container_width=True)
 
 
 if ss.page == "start":
