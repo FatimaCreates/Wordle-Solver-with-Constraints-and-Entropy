@@ -10,6 +10,7 @@ from pathlib import Path
 
 import streamlit as st
 
+from src.adversarial import AdversarySession
 from src.game import ALL_GREEN, MAX_GUESSES
 from src.patterns import PatternMatrix
 from src.race import STRATEGY_NAMES, RaceSession
@@ -18,7 +19,8 @@ from src.wordlist import load_answers, load_guesses
 st.set_page_config(page_title="Wordle Solver", page_icon="⭐", layout="centered")
 
 ROOT = Path(__file__).resolve().parent
-PLAY, RACE = "Play", "Race vs AI"
+PLAY, RACE, ABSURD = "Play", "Race vs AI", "Absurdle"
+MODES = [PLAY, RACE, ABSURD]
 CLASS = {0: "r", 1: "y", 2: "g"}      # pattern value -> CSS class (red / yellow / green)
 
 CSS = """
@@ -97,6 +99,60 @@ header[data-testid="stHeader"], #MainMenu, footer { display: none !important; }
 .st-key-start_btn button:hover { transform:translateY(-4px) scale(1.04); }
 .st-key-start_btn button:active { transform:translateY(4px); box-shadow:0 2px 0 #B1A9DA; }
 [data-testid="stRadio"] label p, [data-testid="stRadio"] label div { font-weight:700; color:#3B3560; }
+
+/* ---------- fun extras ---------- */
+.row.shake { animation:shake .4s; }
+@keyframes shake { 0%,100% { transform:translateX(0); } 20% { transform:translateX(-7px); } 40% { transform:translateX(7px); }
+                   60% { transform:translateX(-5px); } 80% { transform:translateX(5px); } }
+.tile.win { animation:flip .5s ease both, bounce .6s ease both; }
+@keyframes bounce { 0%,100% { transform:translateY(0); } 40% { transform:translateY(-14px); } 60% { transform:translateY(-6px); } }
+.confetti { position:fixed; inset:0; pointer-events:none; overflow:hidden; z-index:9999; }
+.confetti span { position:absolute; top:-50px; font-size:1.7rem; animation:fall 3s linear forwards; }
+@keyframes fall { to { transform:translateY(115vh) rotate(420deg); } }
+.bubble { background:#EFEBFA; border-radius:12px; padding:.35rem .6rem; font-size:.78rem; color:#3B3560;
+          text-align:center; margin-top:-.4rem; }
+.stats { display:flex; justify-content:space-around; text-align:center; margin-bottom:.7rem; color:#3B3560; }
+.stat { font-size:.75rem; color:#6c6591; }
+.stat b { display:block; font-size:1.5rem; color:#3B3560; }
+.bar-row { display:flex; align-items:center; gap:.4rem; margin:.15rem 0; font-size:.8rem; color:#3B3560; }
+.bar-row span { width:1rem; text-align:center; font-weight:700; }
+.bar { color:#fff; text-align:right; padding:0 .4rem; border-radius:4px; font-weight:700; min-width:1.6rem; }
+[data-testid="stPopover"] button { border-radius:999px; font-weight:800; background:#B1A9DA; color:#3B3560;
+                                   border:2px solid #fff; box-shadow:0 3px 0 #8f86c4; }
+/* ---------- 3D: block tiles, flip-reveal hero, floating mascots ---------- */
+.row { perspective:600px; }
+.tile { box-shadow:0 4px 0 rgba(90,70,160,.28), 0 7px 10px rgba(60,40,120,.18); }
+.tile.g { box-shadow:0 4px 0 #4d8548, 0 7px 10px rgba(40,90,40,.3); }
+.tile.y { box-shadow:0 4px 0 #b8891a, 0 7px 10px rgba(130,90,10,.3); }
+.tile.r { box-shadow:0 4px 0 #b83b3f, 0 7px 10px rgba(130,30,35,.3); }
+.tile.typed { box-shadow:0 4px 0 #3B3560, 0 7px 10px rgba(60,40,120,.25); }
+.small .tile { box-shadow:0 3px 0 rgba(90,70,160,.28); }
+.small .tile.g { box-shadow:0 3px 0 #4d8548; } .small .tile.y { box-shadow:0 3px 0 #b8891a; }
+.small .tile.r { box-shadow:0 3px 0 #b83b3f; }
+
+.sr { position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); }
+.hero { display:flex; gap:7px; justify-content:center; margin:.6rem 0 .2rem 0; perspective:700px; }
+.hero .face { width:46px; height:52px; display:flex; align-items:center; justify-content:center;
+              font-size:1.9rem; font-weight:800; color:#fff; border-radius:9px; box-sizing:border-box;
+              transform-style:preserve-3d; background:#fff; color:#3B3560; border:2px solid #B1A9DA;
+              animation:heroflip .9s cubic-bezier(.3,1.3,.5,1) both, bob 3s ease-in-out infinite; }
+.hero .face.g { --c:#6AAA64; --d:#4d8548; } .hero .face.y { --c:#E5B22A; --d:#b8891a; }
+.hero .face.r { --c:#E4575B; --d:#b83b3f; }
+@keyframes heroflip {
+  0%   { transform:rotateX(0); background:#fff; color:#3B3560; box-shadow:0 4px 0 #B1A9DA; }
+  49%  { transform:rotateX(90deg); background:#fff; color:#3B3560; }
+  50%  { transform:rotateX(90deg); background:var(--c); color:#fff; border-color:var(--c); }
+  100% { transform:rotateX(0); background:var(--c); color:#fff; border-color:var(--c); box-shadow:0 5px 0 var(--d), 0 10px 14px rgba(60,40,120,.25); } }
+@keyframes bob { 0%,100% { translate:0 0; } 50% { translate:0 -7px; } }
+.hero-sub { text-align:center; font-weight:800; letter-spacing:.35em; color:#3B3560; margin:.5rem 0 0 0; }
+.hero-sub span { background:#FFEDA8; padding:0 .4rem; border-radius:8px; }
+.mascot { display:block; margin:.9rem auto 0 auto; width:170px; max-width:60%; animation:float 3.6s ease-in-out infinite;
+          filter:drop-shadow(0 8px 6px rgba(60,40,120,.25)); }
+.robot { display:block; margin:0 auto .1rem auto; width:64px; animation:float 2.8s ease-in-out infinite;
+         filter:drop-shadow(0 5px 4px rgba(60,40,120,.25)); }
+@keyframes float { 0%,100% { transform:translateY(0) rotate(-1.5deg); } 50% { transform:translateY(-9px) rotate(1.5deg); } }
+@media (prefers-reduced-motion: reduce) { .hero .face, .mascot, .robot { animation:none; }
+  .hero .face { background:var(--c); color:#fff; border-color:var(--c); } }
 </style>
 """
 
@@ -115,19 +171,40 @@ def background_uri() -> str:
     return "data:image/jpeg;base64," + base64.b64encode(path.read_bytes()).decode()
 
 
+@st.cache_resource
+def image_uri(name: str) -> str:
+    path = ROOT / "assets" / name
+    if not path.exists():
+        return ""
+    return "data:image/png;base64," + base64.b64encode(path.read_bytes()).decode()
+
+
+def mascot_html(name, css_class, alt):
+    uri = image_uri(name)
+    return f'<img class="{css_class}" src="{uri}" alt="{alt}">' if uri else ""
+
+
 # ---------- HTML helpers ----------
-def board_html(history, current="", show_letters=True, animate_last=False, small=False, rows=MAX_GUESSES):
+def board_html(history, current="", show_letters=True, animate_last=False, small=False,
+               shake=False, win_last=False, rows=MAX_GUESSES):
     out = [f'<div class="pad"><div class="board{" small" if small else ""}">']
     for r in range(rows):
-        out.append('<div class="row">')
+        typing = r == len(history) and bool(current)
+        out.append(f'<div class="row{" shake" if typing and shake else ""}">')
         if r < len(history):
             word, pattern = history[r]
             pop = animate_last and r == len(history) - 1
             for i, (ch, p) in enumerate(zip(word, pattern)):
-                style = f' style="animation-delay:{i * 0.12:.2f}s"' if pop else ""
-                letter = ch if show_letters else ""
-                out.append(f'<div class="tile {CLASS[p]}{" pop" if pop else ""}"{style}>{letter}</div>')
-        elif r == len(history) and current:                      # the row being typed
+                cls, style = f"tile {CLASS[p]}", ""
+                if pop:
+                    cls += " pop"
+                    if win_last:                                    # flip, then bounce
+                        cls += " win"
+                        style = f' style="animation-delay:{i * 0.12:.2f}s,{0.7 + i * 0.1:.2f}s"'
+                    else:
+                        style = f' style="animation-delay:{i * 0.12:.2f}s"'
+                out.append(f'<div class="{cls}"{style}>{ch if show_letters else ""}</div>')
+        elif typing:                                                # the row being typed
             for i in range(5):
                 ch = current[i] if i < len(current) else ""
                 out.append(f'<div class="tile{" typed" if ch else ""}">{ch}</div>')
@@ -162,17 +239,85 @@ def status_html(kind, text, tip="", extra_css=""):
     return f'{extra_css}<div class="pad">{body}</div>'
 
 
+# ---------- fun extras: praise, confetti, AI note, share grid, stats ----------
+PRAISE = {1: "Genius! ⭐", 2: "Magnificent! ✨", 3: "Impressive! 🎉", 4: "Splendid! 💜",
+          5: "Great! 💛", 6: "Phew, just in time! 😅"}
+AI_STYLE = {"random": ("🎲 Random", "picked any word that still fits"),
+            "frequency": ("🔤 Frequency", "went for the most common letters"),
+            "minimax": ("🛡️ Minimax", "played safe against the worst case"),
+            "entropy": ("🧠 Entropy", "picked the most informative word")}
+SHARE_EMOJI = {0: "🟥", 1: "🟨", 2: "🟩"}
+
+
+def solved(hist):
+    return bool(hist) and hist[-1][1] == ALL_GREEN
+
+
+def confetti_html():
+    rnd = random.Random()
+    bits = [f'<span style="left:{rnd.randint(0, 96)}%;animation-delay:{rnd.random() * 1.2:.2f}s;'
+            f'animation-duration:{2.4 + rnd.random() * 1.6:.2f}s">{rnd.choice(["⭐", "✨", "💜", "💛", "🌟"])}</span>'
+            for _ in range(26)]
+    return '<div class="confetti">' + "".join(bits) + "</div>"
+
+
+def ai_note_html(session):
+    """What the AI just did, in numbers (never shows its letters)."""
+    sizes = session.ai_sizes
+    if len(sizes) < 2:
+        return ""
+    name, how = AI_STYLE[session.strategy_name]
+    return f'<div class="bubble"><b>{name}</b> · {sizes[-2]} → {sizes[-1]} words left<br><i>{how}</i></div>'
+
+
+def share_text(session, race):
+    hist = session.player_history
+    ok = solved(hist)
+    title = f"Wordle Solver {len(hist) if ok else 'X'}/{getattr(session, 'max_guesses', MAX_GUESSES)}"
+    if getattr(session, "adversarial", False):
+        title += " (Absurdle)"
+    lines = [title + (f" vs {AI_STYLE[session.strategy_name][0]} AI" if race else "")]
+    if race:
+        lines.append({"player": "🏆 I won the race!", "ai": "🤖 The AI won", "draw": "🤝 Draw"}[session.winner])
+    lines.append("")
+    lines += ["".join(SHARE_EMOJI[p] for p in pattern) for _, pattern in hist]
+    return "\n".join(lines)
+
+
+def new_stats():
+    return {"played": 0, "wins": 0, "streak": 0, "best": 0,
+            "dist": {1: 0, 2: 0, 3: 0, 4: 0, 5: 0, 6: 0, "fail": 0}}
+
+
+def stats_html(s):
+    pct = round(100 * s["wins"] / s["played"]) if s["played"] else 0
+    top = max(s["dist"].values()) or 1
+    bars = []
+    for k in (1, 2, 3, 4, 5, 6, "fail"):
+        v = s["dist"][k]
+        width = max(8, round(100 * v / top)) if v else 8
+        color = "#E4575B" if k == "fail" else "#6AAA64"
+        bars.append(f'<div class="bar-row"><span>{"✗" if k == "fail" else k}</span>'
+                    f'<div class="bar" style="width:{width}%;background:{color}">{v}</div></div>')
+    return ('<div class="stats">'
+            f'<div class="stat"><b>{s["played"]}</b>Played</div>'
+            f'<div class="stat"><b>{pct}%</b>Won</div>'
+            f'<div class="stat"><b>{s["streak"]}</b>Streak</div>'
+            f'<div class="stat"><b>{s["best"]}</b>Best</div></div>'
+            '<div class="label">Guesses per win</div>' + "".join(bars))
+
+
 # ---------- state and callbacks ----------
 answers, pool, pm = load_data()
 ss = st.session_state
 
-HINT_TIP = ("A hint is not always a possible answer. Sometimes it is chosen only because it splits "
+HINT_TIP = ("A hint is a helpful word, never the answer itself. It is close to the answer, or it splits "
             "the remaining words as well as possible.")
 
 
 def player_done(session):
     hist = session.player_history
-    return bool(hist) and (hist[-1][1] == ALL_GREEN or len(hist) >= MAX_GUESSES)
+    return bool(hist) and (hist[-1][1] == ALL_GREEN or len(hist) >= getattr(session, "max_guesses", MAX_GUESSES))
 
 
 def is_over():
@@ -181,9 +326,32 @@ def is_over():
 
 def new_game():
     strategy = ss.strategy if ss.mode == RACE else "entropy"
-    ss.session = RaceSession(answers, pool, strategy_name=strategy,
-                             seed=random.randrange(10 ** 9), pm=pm)
+    if ss.mode == ABSURD:                      # no fixed secret: the computer plays against you
+        ss.session = AdversarySession(answers, pool, pm)
+    else:
+        ss.session = RaceSession(answers, pool, strategy_name=strategy,
+                                 seed=random.randrange(10 ** 9), pm=pm)
     ss.hint, ss.msg, ss.hints_used, ss.current = None, None, 0, ""
+    ss.celebrated, ss.counted = False, False
+
+
+def record_result():
+    """Add a finished game to the session stats (once per game)."""
+    if ss.counted or not is_over():
+        return
+    ss.counted = True
+    if ss.mode == ABSURD:                      # Absurdle has 8 guesses, so it is kept out of the 6-guess stats
+        return
+    stats, hist = ss.stats, ss.session.player_history
+    stats["played"] += 1
+    if solved(hist):
+        stats["wins"] += 1
+        stats["streak"] += 1
+        stats["best"] = max(stats["best"], stats["streak"])
+        stats["dist"][len(hist)] += 1
+    else:
+        stats["streak"] = 0
+        stats["dist"]["fail"] += 1
 
 
 def start():
@@ -238,6 +406,7 @@ def press_enter():
             session.ai_step()
         while player_done(session) and not session.is_over():          # player is out of guesses
             session.ai_step()
+    record_result()
 
 
 def give_hint():
@@ -250,21 +419,33 @@ def give_hint():
 if "page" not in ss:
     ss.page, ss.mode, ss.strategy = "start", PLAY, "entropy"
     ss.session, ss.hint, ss.msg, ss.hints_used, ss.current = None, None, None, 0, ""
+    ss.celebrated, ss.counted, ss.stats = False, False, new_stats()
 
 st.markdown(CSS.replace("__BG__", background_uri()), unsafe_allow_html=True)
 
 
 # ---------- start page ----------
+HERO = [("W", "g"), ("O", "y"), ("R", "r"), ("D", "g"), ("L", "y"), ("E", "r")]
+
+
+def hero_html():
+    """WORDLE in six 3D tiles that flip one by one, then float."""
+    faces = "".join(f'<div class="face {c}" aria-hidden="true" style="animation-delay:{0.25 + i * 0.22:.2f}s,'
+                    f'{1.6 + i * 0.2:.2f}s">{ch}</div>' for i, (ch, c) in enumerate(HERO))
+    return ('<div class="sr">WORDLE SOLVER</div>' f'<div class="hero">{faces}</div>'
+            '<div class="hero-sub"><span>SOLVER</span></div>')
+
+
 def start_page():
     st.markdown(
         '<div class="stars">⭐ ✨ ⭐</div>'
-        '<div class="title big">WORDLE <span>SOLVER</span></div>'
+        + hero_html() + mascot_html("owl.png", "mascot", "Wizard owl mascot") +
         '<div class="subtitle">Guess the hidden word in 6 tries, or race an AI that thinks in entropy.</div>'
         '<div class="how"><h4>How to play</h4>'
         '<div class="how-row"><div class="tile mini g">C</div><div>Right letter, right spot</div></div>'
         '<div class="how-row"><div class="tile mini y">R</div><div>Right letter, wrong spot</div></div>'
         '<div class="how-row"><div class="tile mini r">E</div><div>Letter is not in the word</div></div>'
-        '</div><div class="pad"><div class="tip">Tap the keys under the board, then press ENTER.</div></div>',
+        '</div><div class="pad"></div>',
         unsafe_allow_html=True)
     middle = st.columns([1, 3, 1])[1]
     with middle:
@@ -294,55 +475,77 @@ def keyboard(over):
 # ---------- game page ----------
 def game_page():
     session, race, over = ss.session, ss.mode == RACE, is_over()
+    player_hist, ai_hist = session.player_history, session.ai_history
+    won = over and solved(player_hist)
+    celebrate = won and not ss.celebrated          # confetti only on the run that first shows the win
+    if celebrate:
+        ss.celebrated = True
+    shake = bool(ss.msg) and ss.msg[0] == "warn"
 
-    c_home, c_mode, c_ai = st.columns([1, 3.2, 2.2], vertical_alignment="center")
+    c_home, c_stats, c_mode, c_ai = st.columns([0.8, 0.8, 4.4, 2.0], vertical_alignment="center")
     c_home.button("🏠", on_click=go_home, key="home", help="Back to the start page")
-    c_mode.radio("Mode", [PLAY, RACE], index=[PLAY, RACE].index(ss.mode), key="mode_w", horizontal=True,
+    with c_stats.popover("📊", help="Your stats (this visit)"):
+        st.markdown(stats_html(ss.stats), unsafe_allow_html=True)
+    c_mode.radio("Mode", MODES, index=MODES.index(ss.mode), key="mode_w", horizontal=True,
                  on_change=set_mode, label_visibility="collapsed")
     if race:
         c_ai.selectbox("AI strategy", STRATEGY_NAMES, index=STRATEGY_NAMES.index(ss.strategy), key="strategy_w",
                        on_change=set_strategy, format_func=str.capitalize, label_visibility="collapsed")
 
-    player_hist, ai_hist = session.player_history, session.ai_history
     if race:
         left, right = st.columns(2)
         with left:
             st.markdown('<div class="label">You</div>'
-                        + board_html(player_hist, current=ss.current, animate_last=True, small=True),
-                        unsafe_allow_html=True)
+                        + board_html(player_hist, current=ss.current, animate_last=True, small=True,
+                                     shake=shake, win_last=won), unsafe_allow_html=True)
         with right:
-            st.markdown(f'<div class="label">AI ({session.strategy_name})</div>'
-                        + board_html(ai_hist, show_letters=session.is_over(), small=True),
-                        unsafe_allow_html=True)
+            st.markdown(mascot_html("robot.png", "robot", "AI robot")
+                        + f'<div class="label">AI ({session.strategy_name})</div>'
+                        + board_html(ai_hist, show_letters=session.is_over(), small=True)
+                        + ai_note_html(session), unsafe_allow_html=True)
     else:
-        st.markdown(board_html(player_hist, current=ss.current, animate_last=True), unsafe_allow_html=True)
+        st.markdown(board_html(player_hist, current=ss.current, animate_last=True, shake=shake, win_last=won,
+                               rows=getattr(session, "max_guesses", MAX_GUESSES)), unsafe_allow_html=True)
 
-    # one status line: result > warning > hint (empty otherwise). The key colours ride along in the same block.
-    keys_css = key_status_css(player_hist)
+    # one status line: result > warning > hint (empty otherwise). Key colours and confetti ride along.
+    extra = key_status_css(player_hist) + (confetti_html() if celebrate else "")
     if over:
         secret = session.secret.upper()
         if race:
             kind, text = {"player": ("ok", f"🎉 You win the race! The word was {secret}."),
                           "ai": ("err", f"🤖 The AI wins this one. The word was {secret}."),
                           "draw": ("info", f"🤝 Draw, nobody solved it. The word was {secret}.")}[session.winner]
-        elif player_hist and player_hist[-1][1] == ALL_GREEN:
-            kind, text = "ok", f"🎉 Solved in {len(player_hist)} guess{'es' if len(player_hist) > 1 else ''}!"
+        elif won:
+            n = len(player_hist)
+            kind, text = "ok", f"🎉 {PRAISE[n]} Solved in {n} guess{'es' if n > 1 else ''}!"
+            if ss.mode == ABSURD:
+                kind, text = "ok", f"😈 You beat the adversary in {n} guesses!"
         else:
             kind, text = "err", f"Out of guesses. The word was {secret}."
-        st.markdown(status_html(kind, text, extra_css=keys_css), unsafe_allow_html=True)
+        st.markdown(status_html(kind, text, extra_css=extra), unsafe_allow_html=True)
     elif ss.msg:
-        st.markdown(status_html(ss.msg[0], ss.msg[1], extra_css=keys_css), unsafe_allow_html=True)
+        st.markdown(status_html(ss.msg[0], ss.msg[1], extra_css=extra), unsafe_allow_html=True)
     elif ss.hint:
-        st.markdown(status_html("info", f"💡 The AI would guess {ss.hint.upper()} here", HINT_TIP, keys_css),
+        st.markdown(status_html("info", f"💡 Hint: try a word like {ss.hint.upper()}", HINT_TIP, extra),
+                    unsafe_allow_html=True)
+    elif ss.mode == ABSURD:
+        st.markdown(status_html("plain", f"😈 {session.remaining:,} words still fit your clues", extra_css=extra),
                     unsafe_allow_html=True)
     else:
-        st.markdown(status_html("", "", extra_css=keys_css), unsafe_allow_html=True)
+        st.markdown(status_html("", "", extra_css=extra), unsafe_allow_html=True)
 
+    if ss.mode == ABSURD and not over:
+        st.caption("😈 Absurdle: there is no fixed word. After each guess the computer picks the colours "
+                   "that keep the most words possible. You have 8 guesses.")
     keyboard(over)
 
     _, c_hint, c_new, _ = st.columns([1, 1.6, 1.6, 1])
     c_hint.button("💡 Hint", key="hint_btn", on_click=give_hint, disabled=over, use_container_width=True)
     c_new.button("🔄 New", key="new_btn", on_click=new_game, use_container_width=True)
+
+    if over:
+        st.caption("📋 Copy your result to share it:")
+        st.code(share_text(session, race), language=None)
 
 
 if ss.page == "start":
