@@ -10,7 +10,6 @@ from pathlib import Path
 
 import streamlit as st
 
-from src.adversarial import AdversarySession
 from src.game import ALL_GREEN, MAX_GUESSES
 from src.patterns import PatternMatrix
 from src.race import STRATEGY_NAMES, RaceSession
@@ -19,8 +18,7 @@ from src.wordlist import load_answers, load_guesses
 st.set_page_config(page_title="Wordle Solver", page_icon="⭐", layout="centered")
 
 ROOT = Path(__file__).resolve().parent
-PLAY, RACE, ABSURD = "Play", "Race vs AI", "Absurdle"
-MODES = [PLAY, RACE, ABSURD]
+PLAY, RACE = "Play", "Race vs AI"
 CLASS = {0: "r", 1: "y", 2: "g"}      # pattern value -> CSS class (red / yellow / green)
 
 CSS = """
@@ -273,9 +271,7 @@ def ai_note_html(session):
 def share_text(session, race):
     hist = session.player_history
     ok = solved(hist)
-    title = f"Wordle Solver {len(hist) if ok else 'X'}/{getattr(session, 'max_guesses', MAX_GUESSES)}"
-    if getattr(session, "adversarial", False):
-        title += " (Absurdle)"
+    title = f"Wordle Solver {len(hist) if ok else 'X'}/6"
     lines = [title + (f" vs {AI_STYLE[session.strategy_name][0]} AI" if race else "")]
     if race:
         lines.append({"player": "🏆 I won the race!", "ai": "🤖 The AI won", "draw": "🤝 Draw"}[session.winner])
@@ -317,7 +313,7 @@ HINT_TIP = ("A hint is a helpful word, never the answer itself. It is close to t
 
 def player_done(session):
     hist = session.player_history
-    return bool(hist) and (hist[-1][1] == ALL_GREEN or len(hist) >= getattr(session, "max_guesses", MAX_GUESSES))
+    return bool(hist) and (hist[-1][1] == ALL_GREEN or len(hist) >= MAX_GUESSES)
 
 
 def is_over():
@@ -326,11 +322,8 @@ def is_over():
 
 def new_game():
     strategy = ss.strategy if ss.mode == RACE else "entropy"
-    if ss.mode == ABSURD:                      # no fixed secret: the computer plays against you
-        ss.session = AdversarySession(answers, pool, pm)
-    else:
-        ss.session = RaceSession(answers, pool, strategy_name=strategy,
-                                 seed=random.randrange(10 ** 9), pm=pm)
+    ss.session = RaceSession(answers, pool, strategy_name=strategy,
+                             seed=random.randrange(10 ** 9), pm=pm)
     ss.hint, ss.msg, ss.hints_used, ss.current = None, None, 0, ""
     ss.celebrated, ss.counted = False, False
 
@@ -340,8 +333,6 @@ def record_result():
     if ss.counted or not is_over():
         return
     ss.counted = True
-    if ss.mode == ABSURD:                      # Absurdle has 8 guesses, so it is kept out of the 6-guess stats
-        return
     stats, hist = ss.stats, ss.session.player_history
     stats["played"] += 1
     if solved(hist):
@@ -482,11 +473,11 @@ def game_page():
         ss.celebrated = True
     shake = bool(ss.msg) and ss.msg[0] == "warn"
 
-    c_home, c_stats, c_mode, c_ai = st.columns([0.8, 0.8, 4.4, 2.0], vertical_alignment="center")
+    c_home, c_stats, c_mode, c_ai = st.columns([0.9, 0.9, 3.0, 2.1], vertical_alignment="center")
     c_home.button("🏠", on_click=go_home, key="home", help="Back to the start page")
     with c_stats.popover("📊", help="Your stats (this visit)"):
         st.markdown(stats_html(ss.stats), unsafe_allow_html=True)
-    c_mode.radio("Mode", MODES, index=MODES.index(ss.mode), key="mode_w", horizontal=True,
+    c_mode.radio("Mode", [PLAY, RACE], index=[PLAY, RACE].index(ss.mode), key="mode_w", horizontal=True,
                  on_change=set_mode, label_visibility="collapsed")
     if race:
         c_ai.selectbox("AI strategy", STRATEGY_NAMES, index=STRATEGY_NAMES.index(ss.strategy), key="strategy_w",
@@ -504,8 +495,8 @@ def game_page():
                         + board_html(ai_hist, show_letters=session.is_over(), small=True)
                         + ai_note_html(session), unsafe_allow_html=True)
     else:
-        st.markdown(board_html(player_hist, current=ss.current, animate_last=True, shake=shake, win_last=won,
-                               rows=getattr(session, "max_guesses", MAX_GUESSES)), unsafe_allow_html=True)
+        st.markdown(board_html(player_hist, current=ss.current, animate_last=True, shake=shake, win_last=won),
+                    unsafe_allow_html=True)
 
     # one status line: result > warning > hint (empty otherwise). Key colours and confetti ride along.
     extra = key_status_css(player_hist) + (confetti_html() if celebrate else "")
@@ -518,8 +509,6 @@ def game_page():
         elif won:
             n = len(player_hist)
             kind, text = "ok", f"🎉 {PRAISE[n]} Solved in {n} guess{'es' if n > 1 else ''}!"
-            if ss.mode == ABSURD:
-                kind, text = "ok", f"😈 You beat the adversary in {n} guesses!"
         else:
             kind, text = "err", f"Out of guesses. The word was {secret}."
         st.markdown(status_html(kind, text, extra_css=extra), unsafe_allow_html=True)
@@ -528,15 +517,9 @@ def game_page():
     elif ss.hint:
         st.markdown(status_html("info", f"💡 Hint: try a word like {ss.hint.upper()}", HINT_TIP, extra),
                     unsafe_allow_html=True)
-    elif ss.mode == ABSURD:
-        st.markdown(status_html("plain", f"😈 {session.remaining:,} words still fit your clues", extra_css=extra),
-                    unsafe_allow_html=True)
     else:
         st.markdown(status_html("", "", extra_css=extra), unsafe_allow_html=True)
 
-    if ss.mode == ABSURD and not over:
-        st.caption("😈 Absurdle: there is no fixed word. After each guess the computer picks the colours "
-                   "that keep the most words possible. You have 8 guesses.")
     keyboard(over)
 
     _, c_hint, c_new, _ = st.columns([1, 1.6, 1.6, 1])
