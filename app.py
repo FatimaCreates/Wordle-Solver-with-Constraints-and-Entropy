@@ -387,7 +387,7 @@ def press_enter():
     try:
         session.player_guess(word)
     except ValueError:
-        ss.msg = ("warn", f"'{word.upper()}' is not in the word list.")   # keep the letters so they can be fixed
+        ss.msg = ("warn", f"'{word.upper()}' is not in the wordle dictionary.")   # keep the letters so they can be fixed
         return
     except RuntimeError:
         return

@@ -111,7 +111,6 @@ class RaceSession:
 
     @property
     def winner(self) -> Optional[str]:
-        """None while running; then "player", "ai", or "draw" (nobody solved in 6)."""
         if not self.is_over():
             return None
         return self._first_solver or "draw"
