@@ -22,6 +22,8 @@ ROOT = Path(__file__).resolve().parent
 PLAY, RACE, ABSURDLE = "Play", "Race vs AI", "Absurdle"
 MODES = [PLAY, RACE, ABSURDLE]
 CLASS = {0: "r", 1: "y", 2: "g"}      # pattern value -> CSS class (red / yellow / green)
+MAX_HINTS = 3                           # per game
+DRAFT, BLANK = 5, " "                   # a guess row is 5 slots; BLANK holds a letter's place open
 
 CSS = """
 <style>
@@ -55,6 +57,7 @@ header[data-testid="stHeader"], #MainMenu, footer { display: none !important; }
         border:2px solid #B1A9DA; border-radius:7px; background:rgba(255,255,255,.55); box-sizing:border-box; }
 .small .tile { width:38px; height:38px; font-size:1.2rem; border-radius:6px; }
 .tile.typed { background:#fff; border-color:#3B3560; color:#3B3560; }
+.tile.hint { background:#DDF2D9; border-color:#6AAA64; color:#3B3560; }   /* a letter a hint filled in */
 .tile.mini { width:34px; height:34px; font-size:1.1rem; flex:none; }
 .tile.g { background:#6AAA64; border-color:#6AAA64; }
 .tile.y { background:#E5B22A; border-color:#E5B22A; }
@@ -95,6 +98,9 @@ header[data-testid="stHeader"], #MainMenu, footer { display: none !important; }
 .st-key-start_btn button {
   background:linear-gradient(135deg, #FFEDA8, #FFD86B); font-size:1.3rem; padding:.7rem 1rem;
   border:3px solid #fff; box-shadow:0 6px 0 #B1A9DA, 0 12px 20px rgba(80,60,150,.28); }
+.st-key-hint_btn button:disabled, .st-key-hint_btn button:disabled:hover {
+  background:#DCD8E8 !important; color:#9A93B8 !important; border-color:#fff !important;
+  box-shadow:0 3px 0 #C3BED4 !important; transform:none !important; }
 .st-key-start_btn { padding-bottom:.5rem; }
 .st-key-start_btn button:hover { transform:translateY(-4px) scale(1.04); }
 .st-key-start_btn button:active { transform:translateY(4px); box-shadow:0 2px 0 #B1A9DA; }
@@ -188,7 +194,7 @@ def mascot_html(name, css_class, alt):
 
 # ---------- HTML helpers ----------
 def board_html(history, current="", show_letters=True, animate_last=False, small=False,
-               shake=False, win_last=False, rows=MAX_GUESSES):
+               shake=False, win_last=False, rows=MAX_GUESSES, hinted=None):
     out = [f'<div class="pad"><div class="board{" small" if small else ""}">']
     for r in range(rows):
         typing = r == len(history) and bool(current)
@@ -209,7 +215,10 @@ def board_html(history, current="", show_letters=True, animate_last=False, small
         elif typing:                                                # the row being typed
             for i in range(5):
                 ch = current[i] if i < len(current) else ""
-                out.append(f'<div class="tile{" typed" if ch else ""}">{ch}</div>')
+                if ch.strip():
+                    out.append(f'<div class="tile typed{" hint" if i in (hinted or {}) else ""}">{ch}</div>')
+                else:
+                    out.append('<div class="tile"></div>')
         else:
             out.append('<div class="tile"></div>' * 5)
         out.append("</div>")
@@ -319,8 +328,8 @@ def stats_html(s):
 answers, pool, pm = load_data()
 ss = st.session_state
 
-HINT_TIP = ("A hint is a helpful word, never the answer itself. It is close to the answer, or it splits "
-            "the remaining words as well as possible.")
+HINT_TIP = (f"{MAX_HINTS} hints per game. Each one fills a single letter into its correct box; "
+            "the rest of the word is still up to you.")
 
 
 def player_done(session):
@@ -340,7 +349,7 @@ def new_game():
         strategy = ss.strategy if ss.mode == RACE else "entropy"
         ss.session = RaceSession(answers, pool, strategy_name=strategy,
                                  seed=random.randrange(10 ** 9), pm=pm)
-    ss.hint, ss.msg, ss.hints_used, ss.current = None, None, 0, ""
+    ss.hint, ss.msg, ss.hints_used, ss.current, ss.hinted = None, None, 0, "", {}
     ss.celebrated, ss.counted = False, False
 
 
@@ -380,15 +389,36 @@ def set_strategy():
     new_game()
 
 
+def draft_slots():
+    """The row being typed as 5 slots; hint letters sit in their own slot, gaps stay BLANK."""
+    return list(ss.current.ljust(DRAFT)[:DRAFT])
+
+
+def set_draft(slots):
+    """Save the slots as text. Inner blanks keep the later letters in place; trailing ones are dropped."""
+    ss.current = "".join(slots).rstrip()
+
+
 def press_key(ch):
     ss.msg = None
-    if not is_over() and len(ss.current) < 5:
-        ss.current += ch
+    if is_over():
+        return
+    slots = draft_slots()
+    for i in range(DRAFT):                             # fill the leftmost free slot
+        if not slots[i].strip():
+            slots[i] = ch
+            break
+    set_draft(slots)
 
 
 def press_back():
     ss.msg = None
-    ss.current = ss.current[:-1]
+    slots = draft_slots()
+    for i in range(DRAFT - 1, -1, -1):                 # a hint letter stays: it was paid for
+        if slots[i].strip() and i not in ss.hinted:
+            slots[i] = BLANK
+            break
+    set_draft(slots)
 
 
 def press_enter():
@@ -396,8 +426,8 @@ def press_enter():
     ss.msg = None
     if is_over():
         return
-    word = ss.current
-    if len(word) < 5:
+    word = ss.current.replace(BLANK, "")
+    if BLANK in ss.current or len(word) < DRAFT:
         ss.msg = ("warn", "Not enough letters.")
         return
     try:
@@ -407,7 +437,7 @@ def press_enter():
         return
     except RuntimeError:
         return
-    ss.current, ss.hint = "", None
+    ss.current, ss.hint, ss.hinted = "", None, {}
     if race:
         if not session.is_over():
             session.ai_step()
@@ -417,20 +447,27 @@ def press_enter():
 
 
 def give_hint():
+    """Spend one hint to lock the next wrong letter into its true position (Play and Race only)."""
     ss.msg = None
-    if not is_over():
-        try:
-            ss.hint = ss.session.hint()
-        except ValueError:                       # no word fits the clues (cannot happen in a real game)
-            ss.msg = ("warn", "No words fit those clues.")
-        else:
-            ss.hints_used += 1
+    if is_over() or ss.hints_used >= MAX_HINTS or ss.mode == ABSURDLE:
+        return
+    secret = ss.session.secret
+    slots = draft_slots()
+    pos = next((i for i in range(DRAFT) if slots[i] != secret[i]), None)
+    if pos is None:                                   # the row already holds every letter
+        ss.msg = ("ok", "Every letter is already in the right spot — just press Enter!")
+        return
+    slots[pos] = secret[pos]
+    set_draft(slots)
+    ss.hinted[pos] = secret[pos]
+    ss.hints_used += 1
+    ss.hint = f"Hint: the letter in spot {pos + 1} is '{secret[pos].upper()}' — filled in for you."
 
 
 if "page" not in ss:
     ss.page, ss.mode, ss.strategy = "start", PLAY, "entropy"
     ss.session, ss.hint, ss.msg, ss.hints_used, ss.current = None, None, None, 0, ""
-    ss.celebrated, ss.counted, ss.stats = False, False, new_stats()
+    ss.hinted, ss.celebrated, ss.counted, ss.stats = {}, False, False, new_stats()
 
 st.markdown(CSS.replace("__BG__", background_uri()), unsafe_allow_html=True)
 
@@ -510,15 +547,15 @@ def game_page():
         with left:
             st.markdown(empty + '<div class="label">You</div>'
                         + board_html(player_hist, current=ss.current, animate_last=True, small=True,
-                                     shake=shake, win_last=won), unsafe_allow_html=True)
+                                     shake=shake, win_last=won, hinted=ss.hinted), unsafe_allow_html=True)
         with right:
             st.markdown(f'<div class="robot-slot">{robot}</div>'
                         + f'<div class="label">AI ({session.strategy_name})</div>'
                         + board_html(ai_hist, show_letters=session.is_over(), small=True)
                         + ai_note_html(session), unsafe_allow_html=True)
     else:
-        st.markdown(board_html(player_hist, current=ss.current, animate_last=True, shake=shake, win_last=won),
-                    unsafe_allow_html=True)
+        st.markdown(board_html(player_hist, current=ss.current, animate_last=True, shake=shake, win_last=won,
+                               hinted=ss.hinted), unsafe_allow_html=True)
         if ss.mode == ABSURDLE:
             st.markdown(absurdle_note_html(session), unsafe_allow_html=True)
 
@@ -549,15 +586,19 @@ def game_page():
     elif ss.msg:
         st.markdown(status_html(ss.msg[0], ss.msg[1], extra_css=extra), unsafe_allow_html=True)
     elif ss.hint:
-        st.markdown(status_html("info", f"💡 Hint: try a word like {ss.hint.upper()}", HINT_TIP, extra),
-                    unsafe_allow_html=True)
+        st.markdown(status_html("info", f"💡 {ss.hint}", HINT_TIP, extra), unsafe_allow_html=True)
     else:
         st.markdown(status_html("", "", extra_css=extra), unsafe_allow_html=True)
 
     keyboard(over)
 
+    # Hints need a fixed secret word, which Absurdle does not have.
+    hint_off = over or ss.hints_used >= MAX_HINTS or ss.mode == ABSURDLE
+    hint_help = (f"Reveals one letter in its correct spot ({MAX_HINTS} per game)." if ss.mode != ABSURDLE
+                 else "Absurdle has no fixed word, so there is no letter to reveal.")
     _, c_hint, c_new, _ = st.columns([1, 1.6, 1.6, 1])
-    c_hint.button("💡 Hint", key="hint_btn", on_click=give_hint, disabled=over, use_container_width=True)
+    c_hint.button(f"💡 Hint {ss.hints_used}/{MAX_HINTS}", key="hint_btn", on_click=give_hint,
+                  disabled=hint_off, use_container_width=True, help=hint_help)
     c_new.button("🔄 New", key="new_btn", on_click=new_game, use_container_width=True)
 
     if over:

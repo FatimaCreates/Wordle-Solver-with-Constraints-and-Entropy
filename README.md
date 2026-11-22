@@ -83,7 +83,7 @@ matrix, the solvers and the UI can never disagree about what a yellow tile means
 
 ## The three ways to play
 
-* **Play** — normal Wordle, 6 guesses, with a hint button.
+* **Play** — normal Wordle, 6 guesses, with a hint button (3 hints per game).
 * **Race vs AI** — you and an AI get the same secret word. Pick the AI's strategy
   (random / frequency / minimax / entropy) from the dropdown. The AI's letters stay
   hidden until the game ends.
@@ -236,8 +236,10 @@ cleanup.
   guesses (4.4 vs 62 words left after one).
 * Absurdle is winnable within 6 guesses by a good solver because the adversary must keep
   the *largest* consistent group every turn, which can trap it as the pool shrinks.
-* The alpha-beta solver in `src/adversarial.py` is used for hints only; it falls back to
-  the entropy policy when more than 40 words are still possible.
+* The alpha-beta solver in `src/adversarial.py` is the Absurdle search; a hint is not a
+  suggested word but one true letter in its true box (3 per game), because a whole-word
+  suggestion is effectively the answer and can waste red letters. Hints are off in
+  Absurdle, which has no fixed word to reveal.
 * The supervised pipeline is not leak-free: `checks` is counted over the finished game,
   so it partly encodes `solved` (see the supervised-learning section). `answer` and
   `run` are never used as features.

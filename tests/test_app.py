@@ -86,10 +86,17 @@ def test_not_enough_letters_and_invalid_word():
     assert at.session_state["current"] == "zzzzz"            # letters kept so they can be fixed
 
 
-def test_hint_button():
-    at = force_secret(start_game())
+def test_hint_fills_one_letter_and_stops_after_three():
+    at = force_secret(start_game())                     # secret: wound
     at = click(at, "hint_btn")
-    assert "The AI would guess" in page_text(at)
+    assert at.session_state["current"] == "w"
+    assert at.session_state["hints_used"] == 1 and "in spot 1 is 'W'" in page_text(at)
+    for n in (2, 3):
+        at = click(at, "hint_btn")
+        assert at.session_state["hints_used"] == n
+    assert at.session_state["current"] == "wou"
+    assert at.button(key="hint_btn").disabled                # the third hint is the last one
+    assert "Hint 3/3" in at.button(key="hint_btn").label
 
 
 def test_new_button_resets():
