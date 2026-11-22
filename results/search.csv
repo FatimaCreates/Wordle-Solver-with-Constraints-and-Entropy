@@ -1,0 +1,481 @@
+method,target,found,depth,guesses,expanded,pool_size,answer_pool_size,guess_path,guesses_to_win,optimal
+bfs,adobe,True,1,['focal'],134,12,80,focal,2,True
+dfs,adobe,True,1,['focal'],638,12,80,focal,2,True
+ucs,adobe,True,1,['focal'],134,12,80,focal,2,True
+dls,adobe,True,1,['focal'],626,12,80,focal,2,True
+greedy,adobe,True,1,['focal'],113,12,80,focal,2,True
+astar,adobe,True,1,['focal'],55,12,80,focal,2,True
+bfs,crazy,True,2,"['cigar', 'sissy']",278,12,80,cigar sissy,3,True
+dfs,crazy,True,2,"['heath', 'sissy']",266,12,80,heath sissy,3,True
+ucs,crazy,True,2,"['cigar', 'sissy']",278,12,80,cigar sissy,3,True
+dls,crazy,True,2,"['heath', 'sissy']",253,12,80,heath sissy,3,True
+greedy,crazy,True,2,"['cigar', 'sissy']",189,12,80,cigar sissy,3,True
+astar,crazy,True,2,"['cigar', 'sissy']",219,12,80,cigar sissy,3,True
+bfs,sower,True,1,['serve'],183,12,80,serve,2,True
+dfs,sower,True,1,['serve'],363,12,80,serve,2,True
+ucs,sower,True,1,['serve'],183,12,80,serve,2,True
+dls,sower,True,1,['serve'],345,12,80,serve,2,True
+greedy,sower,True,1,['serve'],150,12,80,serve,2,True
+astar,sower,True,1,['serve'],65,12,80,serve,2,True
+bfs,repay,True,1,['rebut'],62,12,80,rebut,2,True
+dfs,repay,True,1,['rebut'],811,12,80,rebut,2,True
+ucs,repay,True,1,['rebut'],62,12,80,rebut,2,True
+dls,repay,True,1,['rebut'],800,12,80,rebut,2,True
+greedy,repay,True,1,['rebut'],55,12,80,rebut,2,True
+astar,repay,True,1,['rebut'],30,12,80,rebut,2,True
+bfs,digit,True,1,['cigar'],24,12,80,cigar,2,True
+dfs,digit,True,1,['cigar'],849,12,80,cigar,2,True
+ucs,digit,True,1,['cigar'],24,12,80,cigar,2,True
+dls,digit,True,1,['cigar'],838,12,80,cigar,2,True
+greedy,digit,True,1,['cigar'],21,12,80,cigar,2,True
+astar,digit,True,1,['cigar'],10,12,80,cigar,2,True
+bfs,crate,True,1,['rebut'],57,12,80,rebut,2,True
+dfs,crate,True,1,['rebut'],816,12,80,rebut,2,True
+ucs,crate,True,1,['rebut'],57,12,80,rebut,2,True
+dls,crate,True,1,['rebut'],805,12,80,rebut,2,True
+greedy,crate,True,1,['rebut'],50,12,80,rebut,2,True
+astar,crate,True,1,['rebut'],25,12,80,rebut,2,True
+bfs,cluck,True,1,['cigar'],30,12,80,cigar,2,True
+dfs,cluck,True,1,['cigar'],843,12,80,cigar,2,True
+ucs,cluck,True,1,['cigar'],30,12,80,cigar,2,True
+dls,cluck,True,1,['cigar'],832,12,80,cigar,2,True
+greedy,cluck,True,1,['cigar'],27,12,80,cigar,2,True
+astar,cluck,True,1,['cigar'],13,12,80,cigar,2,True
+bfs,spike,True,1,['awake'],95,12,80,awake,2,True
+dfs,spike,True,1,['awake'],739,12,80,awake,2,True
+ucs,spike,True,1,['awake'],95,12,80,awake,2,True
+dls,spike,True,1,['awake'],728,12,80,awake,2,True
+greedy,spike,True,1,['awake'],81,12,80,awake,2,True
+astar,spike,True,1,['awake'],43,12,80,awake,2,True
+bfs,mimic,True,1,['cigar'],29,12,80,cigar,2,True
+dfs,mimic,True,1,['cigar'],844,12,80,cigar,2,True
+ucs,mimic,True,1,['cigar'],29,12,80,cigar,2,True
+dls,mimic,True,1,['cigar'],833,12,80,cigar,2,True
+greedy,mimic,True,1,['cigar'],26,12,80,cigar,2,True
+astar,mimic,True,1,['cigar'],12,12,80,cigar,2,True
+bfs,pound,True,1,['humph'],85,12,80,humph,2,True
+dfs,pound,True,1,['humph'],764,12,80,humph,2,True
+ucs,pound,True,1,['humph'],85,12,80,humph,2,True
+dls,pound,True,1,['humph'],753,12,80,humph,2,True
+greedy,pound,True,1,['humph'],73,12,80,humph,2,True
+astar,pound,True,1,['humph'],39,12,80,humph,2,True
+bfs,maxim,True,2,"['cigar', 'rebut']",274,12,80,cigar rebut,3,True
+dfs,maxim,True,2,"['dwarf', 'cigar']",45,12,80,dwarf cigar,3,True
+ucs,maxim,True,2,"['cigar', 'rebut']",274,12,80,cigar rebut,3,True
+dls,maxim,True,2,"['dwarf', 'cigar']",45,12,80,dwarf cigar,3,True
+greedy,maxim,True,2,"['cigar', 'rebut']",185,12,80,cigar rebut,3,True
+astar,maxim,True,2,"['cigar', 'rebut']",216,12,80,cigar rebut,3,True
+bfs,linen,True,2,"['cigar', 'rebut']",275,12,80,cigar rebut,3,True
+dfs,linen,True,3,"['dwarf', 'heath', 'humph']",103,12,80,dwarf heath humph,4,False
+ucs,linen,True,2,"['cigar', 'rebut']",275,12,80,cigar rebut,3,True
+dls,linen,True,3,"['dwarf', 'heath', 'humph']",102,12,80,dwarf heath humph,4,False
+greedy,linen,True,2,"['cigar', 'rebut']",186,12,80,cigar rebut,3,True
+astar,linen,True,2,"['cigar', 'rebut']",217,12,80,cigar rebut,3,True
+bfs,unmet,True,1,['rebut'],46,12,80,rebut,2,True
+dfs,unmet,True,1,['rebut'],827,12,80,rebut,2,True
+ucs,unmet,True,1,['rebut'],46,12,80,rebut,2,True
+dls,unmet,True,1,['rebut'],816,12,80,rebut,2,True
+greedy,unmet,True,1,['rebut'],41,12,80,rebut,2,True
+astar,unmet,True,1,['rebut'],20,12,80,rebut,2,True
+bfs,flesh,True,1,['sissy'],66,12,80,sissy,2,True
+dfs,flesh,True,1,['sissy'],804,12,80,sissy,2,True
+ucs,flesh,True,1,['sissy'],66,12,80,sissy,2,True
+dls,flesh,True,1,['sissy'],793,12,80,sissy,2,True
+greedy,flesh,True,1,['sissy'],57,12,80,sissy,2,True
+astar,flesh,True,1,['sissy'],31,12,80,sissy,2,True
+bfs,booby,True,2,"['cigar', 'rebut']",209,12,80,cigar rebut,3,True
+dfs,booby,True,2,"['dwarf', 'rebut']",195,12,80,dwarf rebut,3,True
+ucs,booby,True,2,"['cigar', 'rebut']",209,12,80,cigar rebut,3,True
+dls,booby,True,2,"['dwarf', 'rebut']",185,12,80,dwarf rebut,3,True
+greedy,booby,True,2,"['rebut', 'cigar']",195,12,80,rebut cigar,3,True
+astar,booby,True,2,"['cigar', 'rebut']",209,12,80,cigar rebut,3,True
+bfs,forth,True,1,['heath'],186,12,80,heath,2,True
+dfs,forth,True,1,['heath'],285,12,80,heath,2,True
+ucs,forth,True,1,['heath'],186,12,80,heath,2,True
+dls,forth,True,1,['heath'],272,12,80,heath,2,True
+greedy,forth,True,1,['heath'],151,12,80,heath,2,True
+astar,forth,True,1,['heath'],66,12,80,heath,2,True
+bfs,first,True,1,['cigar'],23,12,80,cigar,2,True
+dfs,first,True,1,['cigar'],850,12,80,cigar,2,True
+ucs,first,True,1,['cigar'],23,12,80,cigar,2,True
+dls,first,True,1,['cigar'],839,12,80,cigar,2,True
+greedy,first,True,1,['cigar'],20,12,80,cigar,2,True
+astar,first,True,1,['cigar'],9,12,80,cigar,2,True
+bfs,stand,True,1,['dwarf'],207,12,80,dwarf,2,True
+dfs,stand,True,1,['dwarf'],3,12,80,dwarf,2,True
+ucs,stand,True,1,['dwarf'],207,12,80,dwarf,2,True
+dls,stand,True,1,['dwarf'],3,12,80,dwarf,2,True
+greedy,stand,True,1,['dwarf'],165,12,80,dwarf,2,True
+astar,stand,True,1,['dwarf'],69,12,80,dwarf,2,True
+bfs,belly,True,1,['blush'],121,12,80,blush,2,True
+dfs,belly,True,1,['blush'],682,12,80,blush,2,True
+ucs,belly,True,1,['blush'],121,12,80,blush,2,True
+dls,belly,True,1,['blush'],671,12,80,blush,2,True
+greedy,belly,True,1,['blush'],103,12,80,blush,2,True
+astar,belly,True,1,['blush'],51,12,80,blush,2,True
+bfs,ivory,True,1,['sissy'],70,12,80,sissy,2,True
+dfs,ivory,True,1,['sissy'],800,12,80,sissy,2,True
+ucs,ivory,True,1,['sissy'],70,12,80,sissy,2,True
+dls,ivory,True,1,['sissy'],789,12,80,sissy,2,True
+greedy,ivory,True,1,['sissy'],60,12,80,sissy,2,True
+astar,ivory,True,1,['sissy'],34,12,80,sissy,2,True
+bfs,seedy,True,1,['rebut'],48,12,80,rebut,2,True
+dfs,seedy,True,1,['rebut'],825,12,80,rebut,2,True
+ucs,seedy,True,1,['rebut'],48,12,80,rebut,2,True
+dls,seedy,True,1,['rebut'],814,12,80,rebut,2,True
+greedy,seedy,True,1,['rebut'],43,12,80,rebut,2,True
+astar,seedy,True,1,['rebut'],21,12,80,rebut,2,True
+bfs,print,True,2,"['cigar', 'rebut']",269,12,80,cigar rebut,3,True
+dfs,print,True,2,"['dwarf', 'rebut']",92,12,80,dwarf rebut,3,True
+ucs,print,True,2,"['cigar', 'rebut']",269,12,80,cigar rebut,3,True
+dls,print,True,2,"['dwarf', 'rebut']",91,12,80,dwarf rebut,3,True
+greedy,print,True,2,"['cigar', 'rebut']",180,12,80,cigar rebut,3,True
+astar,print,True,2,"['cigar', 'rebut']",215,12,80,cigar rebut,3,True
+bfs,yearn,True,1,['rebut'],60,12,80,rebut,2,True
+dfs,yearn,True,1,['rebut'],813,12,80,rebut,2,True
+ucs,yearn,True,1,['rebut'],60,12,80,rebut,2,True
+dls,yearn,True,1,['rebut'],802,12,80,rebut,2,True
+greedy,yearn,True,1,['rebut'],53,12,80,rebut,2,True
+astar,yearn,True,1,['rebut'],28,12,80,rebut,2,True
+bfs,drain,True,1,['cigar'],20,12,80,cigar,2,True
+dfs,drain,True,1,['cigar'],853,12,80,cigar,2,True
+ucs,drain,True,1,['cigar'],20,12,80,cigar,2,True
+dls,drain,True,1,['cigar'],842,12,80,cigar,2,True
+greedy,drain,True,1,['cigar'],17,12,80,cigar,2,True
+astar,drain,True,1,['cigar'],8,12,80,cigar,2,True
+bfs,bribe,True,1,['rebut'],59,12,80,rebut,2,True
+dfs,bribe,True,1,['rebut'],814,12,80,rebut,2,True
+ucs,bribe,True,1,['rebut'],59,12,80,rebut,2,True
+dls,bribe,True,1,['rebut'],803,12,80,rebut,2,True
+greedy,bribe,True,1,['rebut'],52,12,80,rebut,2,True
+astar,bribe,True,1,['rebut'],27,12,80,rebut,2,True
+bfs,stout,True,1,['rebut'],39,12,80,rebut,2,True
+dfs,stout,True,1,['rebut'],834,12,80,rebut,2,True
+ucs,stout,True,1,['rebut'],39,12,80,rebut,2,True
+dls,stout,True,1,['rebut'],823,12,80,rebut,2,True
+greedy,stout,True,1,['rebut'],35,12,80,rebut,2,True
+astar,stout,True,1,['rebut'],16,12,80,rebut,2,True
+bfs,panel,True,1,['naval'],167,12,80,naval,2,True
+dfs,panel,True,1,['naval'],457,12,80,naval,2,True
+ucs,panel,True,1,['naval'],167,12,80,naval,2,True
+dls,panel,True,1,['naval'],441,12,80,naval,2,True
+greedy,panel,True,1,['naval'],137,12,80,naval,2,True
+astar,panel,True,1,['naval'],63,12,80,naval,2,True
+bfs,crass,True,1,['sissy'],72,12,80,sissy,2,True
+dfs,crass,True,1,['sissy'],798,12,80,sissy,2,True
+ucs,crass,True,1,['sissy'],72,12,80,sissy,2,True
+dls,crass,True,1,['sissy'],787,12,80,sissy,2,True
+greedy,crass,True,1,['sissy'],62,12,80,sissy,2,True
+astar,crass,True,1,['sissy'],35,12,80,sissy,2,True
+bfs,flume,True,1,['rebut'],45,12,80,rebut,2,True
+dfs,flume,True,1,['rebut'],828,12,80,rebut,2,True
+ucs,flume,True,1,['rebut'],45,12,80,rebut,2,True
+dls,flume,True,1,['rebut'],817,12,80,rebut,2,True
+greedy,flume,True,1,['rebut'],40,12,80,rebut,2,True
+astar,flume,True,1,['rebut'],19,12,80,rebut,2,True
+bfs,offal,True,1,['focal'],138,12,80,focal,2,True
+dfs,offal,True,1,['focal'],625,12,80,focal,2,True
+ucs,offal,True,1,['focal'],138,12,80,focal,2,True
+dls,offal,True,1,['focal'],612,12,80,focal,2,True
+greedy,offal,True,1,['focal'],116,12,80,focal,2,True
+astar,offal,True,1,['focal'],56,12,80,focal,2,True
+bfs,agree,True,1,['cigar'],14,12,80,cigar,2,True
+dfs,agree,True,1,['cigar'],859,12,80,cigar,2,True
+ucs,agree,True,1,['cigar'],14,12,80,cigar,2,True
+dls,agree,True,1,['cigar'],848,12,80,cigar,2,True
+greedy,agree,True,1,['cigar'],11,12,80,cigar,2,True
+astar,agree,True,1,['cigar'],5,12,80,cigar,2,True
+bfs,error,True,1,['evade'],155,12,80,evade,2,True
+dfs,error,True,1,['evade'],580,12,80,evade,2,True
+ucs,error,True,1,['evade'],155,12,80,evade,2,True
+dls,error,True,1,['evade'],563,12,80,evade,2,True
+greedy,error,True,1,['evade'],129,12,80,evade,2,True
+astar,error,True,1,['evade'],59,12,80,evade,2,True
+bfs,swirl,True,1,['awake'],99,12,80,awake,2,True
+dfs,swirl,True,1,['awake'],735,12,80,awake,2,True
+ucs,swirl,True,1,['awake'],99,12,80,awake,2,True
+dls,swirl,True,1,['awake'],724,12,80,awake,2,True
+greedy,swirl,True,1,['awake'],84,12,80,awake,2,True
+astar,swirl,True,1,['awake'],45,12,80,awake,2,True
+bfs,argue,True,1,['cigar'],16,12,80,cigar,2,True
+dfs,argue,True,1,['cigar'],857,12,80,cigar,2,True
+ucs,argue,True,1,['cigar'],16,12,80,cigar,2,True
+dls,argue,True,1,['cigar'],846,12,80,cigar,2,True
+greedy,argue,True,1,['cigar'],13,12,80,cigar,2,True
+astar,argue,True,1,['cigar'],7,12,80,cigar,2,True
+bfs,bleed,True,1,['blush'],123,12,80,blush,2,True
+dfs,bleed,True,1,['blush'],680,12,80,blush,2,True
+ucs,bleed,True,1,['blush'],123,12,80,blush,2,True
+dls,bleed,True,1,['blush'],669,12,80,blush,2,True
+greedy,bleed,True,1,['blush'],105,12,80,blush,2,True
+astar,bleed,True,1,['blush'],53,12,80,blush,2,True
+bfs,delta,True,1,['rebut'],49,12,80,rebut,2,True
+dfs,delta,True,1,['rebut'],824,12,80,rebut,2,True
+ucs,delta,True,1,['rebut'],49,12,80,rebut,2,True
+dls,delta,True,1,['rebut'],813,12,80,rebut,2,True
+greedy,delta,True,1,['rebut'],44,12,80,rebut,2,True
+astar,delta,True,1,['rebut'],22,12,80,rebut,2,True
+bfs,flick,True,1,['focal'],140,12,80,focal,2,True
+dfs,flick,True,1,['focal'],623,12,80,focal,2,True
+ucs,flick,True,1,['focal'],140,12,80,focal,2,True
+dls,flick,True,1,['focal'],610,12,80,focal,2,True
+greedy,flick,True,1,['focal'],118,12,80,focal,2,True
+astar,flick,True,1,['focal'],57,12,80,focal,2,True
+bfs,totem,True,2,"['cigar', 'rebut']",211,12,80,cigar rebut,3,True
+dfs,totem,True,2,"['dwarf', 'rebut']",193,12,80,dwarf rebut,3,True
+ucs,totem,True,2,"['cigar', 'rebut']",211,12,80,cigar rebut,3,True
+dls,totem,True,2,"['dwarf', 'rebut']",183,12,80,dwarf rebut,3,True
+greedy,totem,True,2,"['rebut', 'cigar']",198,12,80,rebut cigar,3,True
+astar,totem,True,2,"['cigar', 'rebut']",210,12,80,cigar rebut,3,True
+bfs,wooer,True,2,"['sissy', 'awake']",350,12,80,sissy awake,3,True
+dfs,wooer,True,3,"['heath', 'serve', 'cigar']",217,12,80,heath serve cigar,4,False
+ucs,wooer,True,2,"['sissy', 'awake']",350,12,80,sissy awake,3,True
+dls,wooer,True,3,"['heath', 'serve', 'cigar']",207,12,80,heath serve cigar,4,False
+greedy,wooer,True,2,"['awake', 'sissy']",242,12,80,awake sissy,3,True
+astar,wooer,True,2,"['sissy', 'awake']",220,12,80,sissy awake,3,True
+bfs,front,True,2,"['cigar', 'rebut']",236,12,80,cigar rebut,3,True
+dfs,front,True,2,"['dwarf', 'focal']",52,12,80,dwarf focal,3,True
+ucs,front,True,2,"['cigar', 'rebut']",236,12,80,cigar rebut,3,True
+dls,front,True,2,"['dwarf', 'focal']",52,12,80,dwarf focal,3,True
+greedy,front,True,2,"['rebut', 'cigar']",203,12,80,rebut cigar,3,True
+astar,front,True,2,"['cigar', 'rebut']",211,12,80,cigar rebut,3,True
+bfs,shrub,True,1,['rebut'],55,12,80,rebut,2,True
+dfs,shrub,True,1,['rebut'],818,12,80,rebut,2,True
+ucs,shrub,True,1,['rebut'],55,12,80,rebut,2,True
+dls,shrub,True,1,['rebut'],807,12,80,rebut,2,True
+greedy,shrub,True,1,['rebut'],49,12,80,rebut,2,True
+astar,shrub,True,1,['rebut'],24,12,80,rebut,2,True
+bfs,parry,True,1,['dwarf'],202,12,80,dwarf,2,True
+dfs,parry,True,1,['dwarf'],20,12,80,dwarf,2,True
+ucs,parry,True,1,['dwarf'],202,12,80,dwarf,2,True
+dls,parry,True,1,['dwarf'],20,12,80,dwarf,2,True
+greedy,parry,True,1,['dwarf'],161,12,80,dwarf,2,True
+astar,parry,True,1,['dwarf'],67,12,80,dwarf,2,True
+bfs,biome,True,2,"['cigar', 'rebut']",276,12,80,cigar rebut,3,True
+dfs,biome,True,2,"['dwarf', 'rebut']",192,12,80,dwarf rebut,3,True
+ucs,biome,True,2,"['cigar', 'rebut']",276,12,80,cigar rebut,3,True
+dls,biome,True,2,"['dwarf', 'rebut']",182,12,80,dwarf rebut,3,True
+greedy,biome,True,2,"['cigar', 'rebut']",187,12,80,cigar rebut,3,True
+astar,biome,True,2,"['cigar', 'rebut']",218,12,80,cigar rebut,3,True
+bfs,lapel,True,1,['naval'],161,12,80,naval,2,True
+dfs,lapel,True,1,['naval'],480,12,80,naval,2,True
+ucs,lapel,True,1,['naval'],161,12,80,naval,2,True
+dls,lapel,True,1,['naval'],464,12,80,naval,2,True
+greedy,lapel,True,1,['naval'],132,12,80,naval,2,True
+astar,lapel,True,1,['naval'],60,12,80,naval,2,True
+bfs,start,True,2,"['cigar', 'rebut']",262,12,80,cigar rebut,3,True
+dfs,start,True,2,"['dwarf', 'rebut']",19,12,80,dwarf rebut,3,True
+ucs,start,True,2,"['cigar', 'rebut']",262,12,80,cigar rebut,3,True
+dls,start,True,2,"['dwarf', 'rebut']",19,12,80,dwarf rebut,3,True
+greedy,start,True,2,"['cigar', 'rebut']",173,12,80,cigar rebut,3,True
+astar,start,True,2,"['cigar', 'rebut']",213,12,80,cigar rebut,3,True
+bfs,greet,True,1,['rebut'],58,12,80,rebut,2,True
+dfs,greet,True,1,['rebut'],815,12,80,rebut,2,True
+ucs,greet,True,1,['rebut'],58,12,80,rebut,2,True
+dls,greet,True,1,['rebut'],804,12,80,rebut,2,True
+greedy,greet,True,1,['rebut'],51,12,80,rebut,2,True
+astar,greet,True,1,['rebut'],26,12,80,rebut,2,True
+bfs,goner,True,1,['cigar'],12,12,80,cigar,2,True
+dfs,goner,True,1,['cigar'],861,12,80,cigar,2,True
+ucs,goner,True,1,['cigar'],12,12,80,cigar,2,True
+dls,goner,True,1,['cigar'],850,12,80,cigar,2,True
+greedy,goner,True,1,['cigar'],9,12,80,cigar,2,True
+astar,goner,True,1,['cigar'],4,12,80,cigar,2,True
+bfs,golem,True,1,['cigar'],10,12,80,cigar,2,True
+dfs,golem,True,1,['cigar'],863,12,80,cigar,2,True
+ucs,golem,True,1,['cigar'],10,12,80,cigar,2,True
+dls,golem,True,1,['cigar'],852,12,80,cigar,2,True
+greedy,golem,True,1,['cigar'],7,12,80,cigar,2,True
+astar,golem,True,1,['cigar'],3,12,80,cigar,2,True
+bfs,lusty,True,1,['sissy'],67,12,80,sissy,2,True
+dfs,lusty,True,1,['sissy'],803,12,80,sissy,2,True
+ucs,lusty,True,1,['sissy'],67,12,80,sissy,2,True
+dls,lusty,True,1,['sissy'],792,12,80,sissy,2,True
+greedy,lusty,True,1,['sissy'],58,12,80,sissy,2,True
+astar,lusty,True,1,['sissy'],32,12,80,sissy,2,True
+bfs,loopy,True,1,['humph'],81,12,80,humph,2,True
+dfs,loopy,True,1,['humph'],770,12,80,humph,2,True
+ucs,loopy,True,1,['humph'],81,12,80,humph,2,True
+dls,loopy,True,1,['humph'],759,12,80,humph,2,True
+greedy,loopy,True,1,['humph'],69,12,80,humph,2,True
+astar,loopy,True,1,['humph'],38,12,80,humph,2,True
+bfs,round,True,1,['rebut'],61,12,80,rebut,2,True
+dfs,round,True,1,['rebut'],812,12,80,rebut,2,True
+ucs,round,True,1,['rebut'],61,12,80,rebut,2,True
+dls,round,True,1,['rebut'],801,12,80,rebut,2,True
+greedy,round,True,1,['rebut'],54,12,80,rebut,2,True
+astar,round,True,1,['rebut'],29,12,80,rebut,2,True
+bfs,audit,True,1,['awake'],103,12,80,awake,2,True
+dfs,audit,True,1,['awake'],730,12,80,awake,2,True
+ucs,audit,True,1,['awake'],103,12,80,awake,2,True
+dls,audit,True,1,['awake'],719,12,80,awake,2,True
+greedy,audit,True,1,['awake'],87,12,80,awake,2,True
+astar,audit,True,1,['awake'],46,12,80,awake,2,True
+bfs,lying,True,1,['sissy'],69,12,80,sissy,2,True
+dfs,lying,True,1,['sissy'],801,12,80,sissy,2,True
+ucs,lying,True,1,['sissy'],69,12,80,sissy,2,True
+dls,lying,True,1,['sissy'],790,12,80,sissy,2,True
+greedy,lying,True,1,['sissy'],59,12,80,sissy,2,True
+astar,lying,True,1,['sissy'],33,12,80,sissy,2,True
+bfs,gamma,True,1,['naval'],162,12,80,naval,2,True
+dfs,gamma,True,1,['naval'],479,12,80,naval,2,True
+ucs,gamma,True,1,['naval'],162,12,80,naval,2,True
+dls,gamma,True,1,['naval'],463,12,80,naval,2,True
+greedy,gamma,True,1,['naval'],133,12,80,naval,2,True
+astar,gamma,True,1,['naval'],61,12,80,naval,2,True
+bfs,labor,True,1,['cigar'],7,12,80,cigar,2,True
+dfs,labor,True,1,['cigar'],866,12,80,cigar,2,True
+ucs,labor,True,1,['cigar'],7,12,80,cigar,2,True
+dls,labor,True,1,['cigar'],855,12,80,cigar,2,True
+greedy,labor,True,1,['cigar'],4,12,80,cigar,2,True
+astar,labor,True,1,['cigar'],2,12,80,cigar,2,True
+bfs,islet,True,1,['rebut'],44,12,80,rebut,2,True
+dfs,islet,True,1,['rebut'],829,12,80,rebut,2,True
+ucs,islet,True,1,['rebut'],44,12,80,rebut,2,True
+dls,islet,True,1,['rebut'],818,12,80,rebut,2,True
+greedy,islet,True,1,['rebut'],39,12,80,rebut,2,True
+astar,islet,True,1,['rebut'],18,12,80,rebut,2,True
+bfs,civic,True,1,['cigar'],33,12,80,cigar,2,True
+dfs,civic,True,1,['cigar'],840,12,80,cigar,2,True
+ucs,civic,True,1,['cigar'],33,12,80,cigar,2,True
+dls,civic,True,1,['cigar'],829,12,80,cigar,2,True
+greedy,civic,True,1,['cigar'],30,12,80,cigar,2,True
+astar,civic,True,1,['cigar'],15,12,80,cigar,2,True
+bfs,forge,True,1,['serve'],173,12,80,serve,2,True
+dfs,forge,True,1,['serve'],387,12,80,serve,2,True
+ucs,forge,True,1,['serve'],173,12,80,serve,2,True
+dls,forge,True,1,['serve'],369,12,80,serve,2,True
+greedy,forge,True,1,['serve'],141,12,80,serve,2,True
+astar,forge,True,1,['serve'],64,12,80,serve,2,True
+bfs,corny,True,1,['cigar'],31,12,80,cigar,2,True
+dfs,corny,True,1,['cigar'],842,12,80,cigar,2,True
+ucs,corny,True,1,['cigar'],31,12,80,cigar,2,True
+dls,corny,True,1,['cigar'],831,12,80,cigar,2,True
+greedy,corny,True,1,['cigar'],28,12,80,cigar,2,True
+astar,corny,True,1,['cigar'],14,12,80,cigar,2,True
+bfs,moult,True,1,['blush'],116,12,80,blush,2,True
+dfs,moult,True,1,['blush'],687,12,80,blush,2,True
+ucs,moult,True,1,['blush'],116,12,80,blush,2,True
+dls,moult,True,1,['blush'],676,12,80,blush,2,True
+greedy,moult,True,1,['blush'],98,12,80,blush,2,True
+astar,moult,True,1,['blush'],50,12,80,blush,2,True
+bfs,basic,True,1,['cigar'],28,12,80,cigar,2,True
+dfs,basic,True,1,['cigar'],845,12,80,cigar,2,True
+ucs,basic,True,1,['cigar'],28,12,80,cigar,2,True
+dls,basic,True,1,['cigar'],834,12,80,cigar,2,True
+greedy,basic,True,1,['cigar'],25,12,80,cigar,2,True
+astar,basic,True,1,['cigar'],11,12,80,cigar,2,True
+bfs,salad,True,1,['focal'],129,12,80,focal,2,True
+dfs,salad,True,1,['focal'],649,12,80,focal,2,True
+ucs,salad,True,1,['focal'],129,12,80,focal,2,True
+dls,salad,True,1,['focal'],637,12,80,focal,2,True
+greedy,salad,True,1,['focal'],109,12,80,focal,2,True
+astar,salad,True,1,['focal'],54,12,80,focal,2,True
+bfs,agate,True,1,['awake'],105,12,80,awake,2,True
+dfs,agate,True,1,['awake'],728,12,80,awake,2,True
+ucs,agate,True,1,['awake'],105,12,80,awake,2,True
+dls,agate,True,1,['awake'],717,12,80,awake,2,True
+greedy,agate,True,1,['awake'],89,12,80,awake,2,True
+astar,agate,True,1,['awake'],47,12,80,awake,2,True
+bfs,spicy,True,1,['sissy'],77,12,80,sissy,2,True
+dfs,spicy,True,1,['sissy'],792,12,80,sissy,2,True
+ucs,spicy,True,1,['sissy'],77,12,80,sissy,2,True
+dls,spicy,True,1,['sissy'],781,12,80,sissy,2,True
+greedy,spicy,True,1,['sissy'],67,12,80,sissy,2,True
+astar,spicy,True,1,['sissy'],37,12,80,sissy,2,True
+bfs,spray,True,2,"['cigar', 'rebut']",267,12,80,cigar rebut,3,True
+dfs,spray,True,2,"['dwarf', 'rebut']",27,12,80,dwarf rebut,3,True
+ucs,spray,True,2,"['cigar', 'rebut']",267,12,80,cigar rebut,3,True
+dls,spray,True,2,"['dwarf', 'rebut']",27,12,80,dwarf rebut,3,True
+greedy,spray,True,2,"['cigar', 'rebut']",178,12,80,cigar rebut,3,True
+astar,spray,True,2,"['cigar', 'rebut']",214,12,80,cigar rebut,3,True
+bfs,essay,True,1,['sissy'],73,12,80,sissy,2,True
+dfs,essay,True,1,['sissy'],797,12,80,sissy,2,True
+ucs,essay,True,1,['sissy'],73,12,80,sissy,2,True
+dls,essay,True,1,['sissy'],786,12,80,sissy,2,True
+greedy,essay,True,1,['sissy'],63,12,80,sissy,2,True
+astar,essay,True,1,['sissy'],36,12,80,sissy,2,True
+bfs,fjord,True,1,['dwarf'],205,12,80,dwarf,2,True
+dfs,fjord,True,1,['dwarf'],7,12,80,dwarf,2,True
+ucs,fjord,True,1,['dwarf'],205,12,80,dwarf,2,True
+dls,fjord,True,1,['dwarf'],7,12,80,dwarf,2,True
+greedy,fjord,True,1,['dwarf'],163,12,80,dwarf,2,True
+astar,fjord,True,1,['dwarf'],68,12,80,dwarf,2,True
+bfs,spend,True,1,['evade'],153,12,80,evade,2,True
+dfs,spend,True,1,['evade'],583,12,80,evade,2,True
+ucs,spend,True,1,['evade'],153,12,80,evade,2,True
+dls,spend,True,1,['evade'],566,12,80,evade,2,True
+greedy,spend,True,1,['evade'],128,12,80,evade,2,True
+astar,spend,True,1,['evade'],58,12,80,evade,2,True
+bfs,kebab,True,1,['rebut'],51,12,80,rebut,2,True
+dfs,kebab,True,1,['rebut'],822,12,80,rebut,2,True
+ucs,kebab,True,1,['rebut'],51,12,80,rebut,2,True
+dls,kebab,True,1,['rebut'],811,12,80,rebut,2,True
+greedy,kebab,True,1,['rebut'],46,12,80,rebut,2,True
+astar,kebab,True,1,['rebut'],23,12,80,rebut,2,True
+bfs,guild,True,1,['blush'],115,12,80,blush,2,True
+dfs,guild,True,1,['blush'],688,12,80,blush,2,True
+ucs,guild,True,1,['blush'],115,12,80,blush,2,True
+dls,guild,True,1,['blush'],677,12,80,blush,2,True
+greedy,guild,True,1,['blush'],97,12,80,blush,2,True
+astar,guild,True,1,['blush'],49,12,80,blush,2,True
+bfs,aback,True,1,['awake'],106,12,80,awake,2,True
+dfs,aback,True,1,['awake'],727,12,80,awake,2,True
+ucs,aback,True,1,['awake'],106,12,80,awake,2,True
+dls,aback,True,1,['awake'],716,12,80,awake,2,True
+greedy,aback,True,1,['awake'],90,12,80,awake,2,True
+astar,aback,True,1,['awake'],48,12,80,awake,2,True
+bfs,motor,True,2,"['cigar', 'rebut']",247,12,80,cigar rebut,3,True
+dfs,motor,True,2,"['dwarf', 'rebut']",93,12,80,dwarf rebut,3,True
+ucs,motor,True,2,"['cigar', 'rebut']",247,12,80,cigar rebut,3,True
+dls,motor,True,2,"['dwarf', 'rebut']",92,12,80,dwarf rebut,3,True
+greedy,motor,True,2,"['rebut', 'cigar']",202,12,80,rebut cigar,3,True
+astar,motor,True,2,"['cigar', 'rebut']",212,12,80,cigar rebut,3,True
+bfs,alone,True,1,['naval'],166,12,80,naval,2,True
+dfs,alone,True,1,['naval'],458,12,80,naval,2,True
+ucs,alone,True,1,['naval'],166,12,80,naval,2,True
+dls,alone,True,1,['naval'],442,12,80,naval,2,True
+greedy,alone,True,1,['naval'],136,12,80,naval,2,True
+astar,alone,True,1,['naval'],62,12,80,naval,2,True
+bfs,hatch,True,1,['humph'],89,12,80,humph,2,True
+dfs,hatch,True,1,['humph'],760,12,80,humph,2,True
+ucs,hatch,True,1,['humph'],89,12,80,humph,2,True
+dls,hatch,True,1,['humph'],749,12,80,humph,2,True
+greedy,hatch,True,1,['humph'],77,12,80,humph,2,True
+astar,hatch,True,1,['humph'],41,12,80,humph,2,True
+bfs,hyper,True,1,['humph'],90,12,80,humph,2,True
+dfs,hyper,True,1,['humph'],759,12,80,humph,2,True
+ucs,hyper,True,1,['humph'],90,12,80,humph,2,True
+dls,hyper,True,1,['humph'],748,12,80,humph,2,True
+greedy,hyper,True,1,['humph'],78,12,80,humph,2,True
+astar,hyper,True,1,['humph'],42,12,80,humph,2,True
+bfs,thumb,True,1,['rebut'],41,12,80,rebut,2,True
+dfs,thumb,True,1,['rebut'],832,12,80,rebut,2,True
+ucs,thumb,True,1,['rebut'],41,12,80,rebut,2,True
+dls,thumb,True,1,['rebut'],821,12,80,rebut,2,True
+greedy,thumb,True,1,['rebut'],37,12,80,rebut,2,True
+astar,thumb,True,1,['rebut'],17,12,80,rebut,2,True
+bfs,dowry,True,1,['awake'],97,12,80,awake,2,True
+dfs,dowry,True,1,['awake'],737,12,80,awake,2,True
+ucs,dowry,True,1,['awake'],97,12,80,awake,2,True
+dls,dowry,True,1,['awake'],726,12,80,awake,2,True
+greedy,dowry,True,1,['awake'],82,12,80,awake,2,True
+astar,dowry,True,1,['awake'],44,12,80,awake,2,True
+bfs,ought,True,1,['cigar'],15,12,80,cigar,2,True
+dfs,ought,True,1,['cigar'],858,12,80,cigar,2,True
+ucs,ought,True,1,['cigar'],15,12,80,cigar,2,True
+dls,ought,True,1,['cigar'],847,12,80,cigar,2,True
+greedy,ought,True,1,['cigar'],12,12,80,cigar,2,True
+astar,ought,True,1,['cigar'],6,12,80,cigar,2,True
+bfs,belch,True,1,['blush'],122,12,80,blush,2,True
+dfs,belch,True,1,['blush'],681,12,80,blush,2,True
+ucs,belch,True,1,['blush'],122,12,80,blush,2,True
+dls,belch,True,1,['blush'],670,12,80,blush,2,True
+greedy,belch,True,1,['blush'],104,12,80,blush,2,True
+astar,belch,True,1,['blush'],52,12,80,blush,2,True
+bfs,dutch,True,1,['humph'],88,12,80,humph,2,True
+dfs,dutch,True,1,['humph'],761,12,80,humph,2,True
+ucs,dutch,True,1,['humph'],88,12,80,humph,2,True
+dls,dutch,True,1,['humph'],750,12,80,humph,2,True
+greedy,dutch,True,1,['humph'],76,12,80,humph,2,True
+astar,dutch,True,1,['humph'],40,12,80,humph,2,True

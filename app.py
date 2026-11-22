@@ -10,6 +10,7 @@ from pathlib import Path
 
 import streamlit as st
 
+from src.adversarial import AdversarySession
 from src.game import ALL_GREEN, MAX_GUESSES
 from src.patterns import PatternMatrix
 from src.race import STRATEGY_NAMES, RaceSession
@@ -18,7 +19,8 @@ from src.wordlist import load_answers, load_guesses
 st.set_page_config(page_title="Wordle Solver", page_icon="⭐", layout="centered")
 
 ROOT = Path(__file__).resolve().parent
-PLAY, RACE = "Play", "Race vs AI"
+PLAY, RACE, ABSURDLE = "Play", "Race vs AI", "Absurdle"
+MODES = [PLAY, RACE, ABSURDLE]
 CLASS = {0: "r", 1: "y", 2: "g"}      # pattern value -> CSS class (red / yellow / green)
 
 CSS = """
@@ -146,8 +148,10 @@ header[data-testid="stHeader"], #MainMenu, footer { display: none !important; }
 .hero-sub span { background:#FFEDA8; padding:0 .4rem; border-radius:8px; }
 .mascot { display:block; margin:.9rem auto 0 auto; width:170px; max-width:60%; animation:float 3.6s ease-in-out infinite;
           filter:drop-shadow(0 8px 6px rgba(60,40,120,.25)); }
-.robot { display:block; margin:0 auto .1rem auto; width:64px; animation:float 2.8s ease-in-out infinite;
-         filter:drop-shadow(0 5px 4px rgba(60,40,120,.25)); }
+.robot-slot { height:64px; margin-bottom:.1rem; }   /* fixed slot: the robot sits in one, the other is empty */
+.robot-slot .robot { display:block; width:64px; height:64px; margin:0 auto; object-fit:contain;
+         animation:float 2.8s ease-in-out infinite; filter:drop-shadow(0 5px 4px rgba(60,40,120,.25)); }
+@media (max-width: 480px) { .robot-slot { display:none; } }   /* columns stack on phones */
 @keyframes float { 0%,100% { transform:translateY(0) rotate(-1.5deg); } 50% { transform:translateY(-9px) rotate(1.5deg); } }
 @media (prefers-reduced-motion: reduce) { .hero .face, .mascot, .robot { animation:none; }
   .hero .face { background:var(--c); color:#fff; border-color:var(--c); } }
@@ -268,6 +272,14 @@ def ai_note_html(session):
     return f'<div class="bubble"><b>{name}</b> · {sizes[-2]} → {sizes[-1]} words left<br><i>{how}</i></div>'
 
 
+def absurdle_note_html(session):
+    """How many words the adversary is still holding on to."""
+    if not getattr(session, "adversarial", False) or not session.player_history or session.is_over():
+        return ""
+    return (f'<div class="bubble">🧱 Absurdle still has <b>{session.remaining:,}</b> words '
+            f'that fit your clues</div>')
+
+
 def share_text(session, race):
     hist = session.player_history
     ok = solved(hist)
@@ -317,13 +329,17 @@ def player_done(session):
 
 
 def is_over():
-    return ss.session.is_over() if ss.mode == RACE else player_done(ss.session)
+    """In Play the player's own board decides; race and Absurdle have their own end state."""
+    return player_done(ss.session) if ss.mode == PLAY else ss.session.is_over()
 
 
 def new_game():
-    strategy = ss.strategy if ss.mode == RACE else "entropy"
-    ss.session = RaceSession(answers, pool, strategy_name=strategy,
-                             seed=random.randrange(10 ** 9), pm=pm)
+    if ss.mode == ABSURDLE:
+        ss.session = AdversarySession(answers, pool, pm)      # no secret word: the adversary decides
+    else:
+        strategy = ss.strategy if ss.mode == RACE else "entropy"
+        ss.session = RaceSession(answers, pool, strategy_name=strategy,
+                                 seed=random.randrange(10 ** 9), pm=pm)
     ss.hint, ss.msg, ss.hints_used, ss.current = None, None, 0, ""
     ss.celebrated, ss.counted = False, False
 
@@ -403,8 +419,12 @@ def press_enter():
 def give_hint():
     ss.msg = None
     if not is_over():
-        ss.hint = ss.session.hint()
-        ss.hints_used += 1
+        try:
+            ss.hint = ss.session.hint()
+        except ValueError:                       # no word fits the clues (cannot happen in a real game)
+            ss.msg = ("warn", "No words fit those clues.")
+        else:
+            ss.hints_used += 1
 
 
 if "page" not in ss:
@@ -477,32 +497,46 @@ def game_page():
     c_home.button("🏠", on_click=go_home, key="home", help="Back to the start page")
     with c_stats.popover("📊", help="Your stats (this visit)"):
         st.markdown(stats_html(ss.stats), unsafe_allow_html=True)
-    c_mode.radio("Mode", [PLAY, RACE], index=[PLAY, RACE].index(ss.mode), key="mode_w", horizontal=True,
+    c_mode.radio("Mode", MODES, index=MODES.index(ss.mode), key="mode_w", horizontal=True,
                  on_change=set_mode, label_visibility="collapsed")
     if race:
         c_ai.selectbox("AI strategy", STRATEGY_NAMES, index=STRATEGY_NAMES.index(ss.strategy), key="strategy_w",
                        on_change=set_strategy, format_func=str.capitalize, label_visibility="collapsed")
 
     if race:
+        robot = mascot_html("robot.png", "robot", "AI robot")
+        empty = '<div class="robot-slot"></div>'      # as tall as the robot, so both labels line up
         left, right = st.columns(2)
         with left:
-            st.markdown('<div class="label">You</div>'
+            st.markdown(empty + '<div class="label">You</div>'
                         + board_html(player_hist, current=ss.current, animate_last=True, small=True,
                                      shake=shake, win_last=won), unsafe_allow_html=True)
         with right:
-            st.markdown(mascot_html("robot.png", "robot", "AI robot")
+            st.markdown(f'<div class="robot-slot">{robot}</div>'
                         + f'<div class="label">AI ({session.strategy_name})</div>'
                         + board_html(ai_hist, show_letters=session.is_over(), small=True)
                         + ai_note_html(session), unsafe_allow_html=True)
     else:
         st.markdown(board_html(player_hist, current=ss.current, animate_last=True, shake=shake, win_last=won),
                     unsafe_allow_html=True)
+        if ss.mode == ABSURDLE:
+            st.markdown(absurdle_note_html(session), unsafe_allow_html=True)
 
     # one status line: result > warning > hint (empty otherwise). Key colours and confetti ride along.
     extra = key_status_css(player_hist) + (confetti_html() if celebrate else "")
     if over:
         secret = session.secret.upper()
-        if race:
+        if ss.mode == ABSURDLE:
+            if won:
+                kind, text = ("ok", f"🎉 You beat Absurdle in {len(player_hist)} "
+                                     f"guess{'es' if len(player_hist) > 1 else ''}! It settled on {secret}.")
+            else:
+                left = session.remaining
+                shown = ", ".join(w.upper() for w in session.candidates[:4])
+                more = " …" if left > 4 else ""
+                kind, text = ("err", f"🧱 Absurdle survived all {MAX_GUESSES} guesses — "
+                                     f"{left} words still fit ({shown}{more}).")
+        elif race:
             kind, text = {"player": ("ok", f"🎉 You win the race! The word was {secret}."),
                           "ai": ("err", f"🤖 The AI wins this one. The word was {secret}."),
                           "draw": ("info", f"🤝 Draw, nobody solved it. The word was {secret}.")}[session.winner]

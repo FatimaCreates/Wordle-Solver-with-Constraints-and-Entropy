@@ -18,6 +18,8 @@ class MatrixStrategy(Strategy):
 
     def choose_guess(self, candidates: List[str], pool: List[str] = None) -> str:
         k = len(candidates)
+        if k == 0:                              # only possible with inconsistent clues
+            raise ValueError("no candidates left: the clues so far are inconsistent")
         if k <= 2:
             return candidates[0]            # 1 left: certain. 2 left: a 50% shot is optimal
         key = tuple(candidates)

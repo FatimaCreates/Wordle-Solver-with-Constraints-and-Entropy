@@ -45,7 +45,8 @@ def test_alphabeta_wins_when_one_word_left():
     assert AlphaBetaSolver(PM).choose_guess(["wound"]) == "wound"
 
 
-def test_genetic_returns_a_real_word_with_good_entropy():
-    word, h, hist = GeneticOpener(PM, seed=1).run()
-    assert word in G and h > 5.0                                   # random words are far lower
+def test_genetic_returns_a_valid_pair_with_high_joint_entropy():
+    words, h, hist = GeneticOpener(PM, pop=12, generations=8, seed=1).run()
+    assert len(set(words)) == 2 and all(w in G for w in words)     # two distinct real words
+    assert h > 8.0                                                 # a single word tops out at 5.9 bits
     assert hist[-1] >= hist[0]                                     # elitism: never gets worse

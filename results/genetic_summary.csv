@@ -1,0 +1,2 @@
+opener,pair_entropy,avg_left_after_2,games,solve_rate_pct,avg_guesses,max_guesses,guess_limit,entropy_only_avg_guesses,ceiling_pair,ceiling_pair_entropy,pct_of_ceiling,avg_runtime_ms
+liane + crost,9.5838,4.43,2315,100.0,3.608,5,6,3.464,soare + clint,9.6329,99.49,10.4

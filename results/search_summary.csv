@@ -1,0 +1,7 @@
+method,solved,avg_expanded,max_expanded,avg_probes,worst_probes,avg_guesses
+bfs,80,112.6375,350,1.15,2,2.15
+dfs,80,620.05,866,1.175,3,2.175
+ucs,80,112.6375,350,1.15,2,2.15
+dls,80,609.7375,855,1.175,3,2.175
+greedy,80,90.725,242,1.15,2,2.15
+astar,80,62.35,220,1.15,2,2.15

@@ -72,13 +72,15 @@ def summarise(per_game, cand_turn):
     out = []
     for name in ORDER:
         g = per_game[per_game.strategy == name]
-        per_run = g.groupby("run").apply(lambda r: r.loc[r.solved, "n_guesses"].mean(), include_groups=False)
+        per_run = g.groupby("run")["n_guesses"].mean()          # losses cost the full 6 guesses
         ct = cand_turn[cand_turn.strategy == name].set_index("turn")["avg_candidates"]
         out.append({
             "strategy": name,
             "runs": g.run.nunique(),
             "games": len(g),
-            "avg_guesses": round(float(g.loc[g.solved, "n_guesses"].mean()), 3),
+            "avg_guesses": round(float(g.n_guesses.mean()), 3),
+            "avg_guesses_solved": round(float(g.loc[g.solved, "n_guesses"].mean()), 3)
+                                  if g.solved.any() else float("nan"),
             "std_across_runs": round(float(per_run.std(ddof=0)), 3) if g.run.nunique() > 1 else 0.0,
             "max_guesses": int(g.n_guesses.max()),
             "solve_rate_pct": round(100 * float(g.solved.mean()), 2),

@@ -14,7 +14,7 @@ from typing import List, Optional
 import numpy as np
 
 from .entropy import EntropyStrategy
-from .game import ALL_GREEN, WORD_LEN, int_to_pattern, pattern_to_int
+from .game import ALL_GREEN, MAX_GUESSES, WORD_LEN, int_to_pattern, pattern_to_int
 
 GREEN = pattern_to_int(ALL_GREEN)
 INF = 10 ** 9
@@ -34,6 +34,8 @@ class AlphaBetaSolver:
 
     def _moves(self, cand: np.ndarray) -> List[int]:
         """The few most promising guesses: smallest one-step worst case, candidates preferred."""
+        if len(cand) == 0:
+            return []
         words = [self.pm.answers[i] for i in cand]
         worst = self.pm.pattern_counts(words).max(axis=1)
         is_cand = np.zeros(len(self.pm.guesses), dtype=bool)
@@ -64,6 +66,8 @@ class AlphaBetaSolver:
 
     def choose_guess(self, candidates: List[str], pool: List[str] = None) -> str:
         k = len(candidates)
+        if k == 0:
+            raise ValueError("no candidates left: the clues so far are inconsistent")
         if k <= 2:
             return candidates[0]
         if k > self.max_words:
@@ -78,12 +82,19 @@ class AlphaBetaSolver:
 
 
 class AdversarySession:
-    """Same interface the app uses for RaceSession, but the secret is never fixed."""
-    adversarial = True
-    max_guesses = 8
+    """Same interface the app uses for RaceSession, but the secret is never fixed.
 
-    def __init__(self, answers: List[str], pool: List[str], pm, solver: Optional[AlphaBetaSolver] = None):
+    The player still gets the normal Wordle allowance (`MAX_GUESSES` = 6), because
+    Absurdle is played here under the same rules as the rest of the project;
+    `max_guesses` is a parameter so an experiment can look at other rules.
+    """
+    adversarial = True
+    max_guesses = MAX_GUESSES
+
+    def __init__(self, answers: List[str], pool: List[str], pm,
+                 solver: Optional[AlphaBetaSolver] = None, max_guesses: int = MAX_GUESSES):
         self.answers, self.pool, self.pm = answers, set(pool), pm
+        self.max_guesses = int(max_guesses)
         self._cand = np.arange(len(answers))
         self._history = []
         self._solver = solver or AlphaBetaSolver(pm)
@@ -130,10 +141,9 @@ class AdversarySession:
         return bool(self._history and self._history[-1][1] == ALL_GREEN) or len(self._history) >= self.max_guesses
 
 
-def play_vs_adversary(chooser, answers, pool, pm, limit: int = 12):
+def play_vs_adversary(chooser, answers, pool, pm, limit: int = MAX_GUESSES):
     """Let an AI strategy play the adversary. Returns (guesses used, solved?, guesses)."""
-    s = AdversarySession(answers, pool, pm)
-    s.max_guesses = limit
+    s = AdversarySession(answers, pool, pm, max_guesses=limit)
     while not s.is_over():
         s.player_guess(chooser.choose_guess(s.candidates, list(pool)))
     return len(s.player_history), s.player_history[-1][1] == ALL_GREEN, [w for w, _ in s.player_history]

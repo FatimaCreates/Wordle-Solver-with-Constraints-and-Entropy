@@ -1,0 +1,5 @@
+model,task,target,accuracy,precision,recall,f1,roc_auc,cv_roc_auc_mean,cv_roc_auc_std,train_rows,test_rows,mae,rmse,r2,cv_mae_mean,cv_mae_std
+logistic_regression,classification,solved,0.9832,0.9832,1.0,0.9916,0.6608,0.654,0.0115,39933,13312,,,,,
+random_forest,classification,solved,0.9832,0.9832,1.0,0.9916,0.6224,0.617,0.0213,39933,13312,,,,,
+linear_regression,regression,n_guesses,,,,,,,,39264,13089,0.6903,0.8703,0.1349,0.6969,0.0035
+random_forest_regressor,regression,n_guesses,,,,,,,,39264,13089,0.6291,0.8051,0.2597,0.6354,0.0023
